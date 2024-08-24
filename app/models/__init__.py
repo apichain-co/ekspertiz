@@ -5,3 +5,4 @@ from .appointment import Appointment
 from .staff import Staff
 from .branch import Branch
 from .company import Company
+from .enums import TransmissionType, FuelType, Color
