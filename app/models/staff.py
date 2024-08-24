@@ -9,6 +9,7 @@ class Staff(db.Model):
     department = db.Column(db.String(50), nullable=False)  # e.g., "IT", "Sales", etc.
     role = db.Column(db.String(50), nullable=False)  # e.g., "Officer", "Manager", "Employee"
     branch_id = db.Column(db.Integer, db.ForeignKey('branch.id'), nullable=False)
+    reports_created = db.relationship('Report', backref='staff', lazy=True)
 
     def __repr__(self):
         return f'<Staff {self.full_name} - {self.role}>'

@@ -1,6 +1,7 @@
 from datetime import datetime
 from ..database import db
 
+
 class Report(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     inspection_date = db.Column(db.Date, nullable=False)
@@ -13,6 +14,11 @@ class Report(db.Model):
     package_id = db.Column(db.Integer, db.ForeignKey('package.id'), nullable=False)
     operation = db.Column(db.String(255))
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+    created_by = db.Column(db.Integer, db.ForeignKey('staff.id'), nullable=False)
+    vehicle_owner = db.relationship('VehicleOwner', uselist=False, backref='report', cascade="all, delete-orphan")
+    agent = db.relationship('Agent', uselist=False, backref='report', cascade="all, delete-orphan")
+    registration_document_seen = db.Column(db.Boolean, nullable=False)
 
     def __repr__(self):
         return f'<Report {self.vehicle_plate} - {self.inspection_date}>'
