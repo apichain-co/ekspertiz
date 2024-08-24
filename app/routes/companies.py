@@ -7,7 +7,7 @@ companies = Blueprint('companies', __name__)
 @companies.route('/company')
 def company_detail():
     company = Company.query.first()
-    return render_template('settings/update_company.html', company=company)
+    return render_template('settings/settings.html', company=company)
 
 @companies.route('/company/add', methods=['GET', 'POST'])
 def add_company():
@@ -72,7 +72,7 @@ def update_company():
         flash('Company successfully updated!')
         return redirect(url_for('companies.company_detail'))
 
-    return render_template('settings/update_company.html', company=company)
+    return render_template('settings/settings.html', company=company)
 
 
 @companies.route('/company/delete', methods=['POST'])

@@ -16,7 +16,7 @@ def add_report():
     if request.method == 'POST':
         inspection_date = request.form['inspection_date']
         vehicle_plate = request.form['vehicle_plate']
-        chassis_no = request.form['chassis_no']
+        chassis_number = request.form['chassis_number']  # Updated to match model attribute
         brand = request.form['brand']
         model = request.form['model']
         model_year = request.form['model_year']
@@ -27,7 +27,7 @@ def add_report():
         new_report = Report(
             inspection_date=inspection_date,
             vehicle_plate=vehicle_plate,
-            chassis_no=chassis_no,
+            chassis_number=chassis_number,  # Updated to match model attribute
             brand=brand,
             model=model,
             model_year=model_year,
