@@ -2,6 +2,7 @@ from ..database import db
 
 
 class Branch(db.Model):
+    __tablename__ = 'branch'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)  # Branch name or identifier
     company_id = db.Column(db.Integer, db.ForeignKey('company.id'), nullable=False)
