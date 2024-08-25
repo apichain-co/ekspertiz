@@ -1,21 +1,19 @@
+from enum import Enum
 from ..database import db
 
-
-class TransmissionType(db.Enum):
+class TransmissionType(Enum):
     MANUAL = "Düz vites"
     AUTOMATIC = "Otomatik"
     SEMI_AUTOMATIC = "Yarı otomatik"
 
-
-class FuelType(db.Enum):
+class FuelType(Enum):
     GASOLINE = "Benzin"
     LPG = "Benzin + LPG"
     DIESEL = "Dizel"
     ELECTRIC = "Elektrikli"
     HYBRID = "Hibrit"
 
-
-class Color(db.Enum):
+class Color(Enum):
     BEIGE = "Bej"
     WHITE = "Beyaz"
     BURGUNDY = "Bordo"

@@ -1,12 +1,11 @@
 from datetime import datetime
-
 from sqlalchemy.orm import validates
-
 from ..database import db
 from . import TransmissionType, FuelType, Color
 
 
 class Vehicle(db.Model):
+    # TODO: ask which ones are really nullable
     id = db.Column(db.Integer, primary_key=True)
     plate = db.Column(db.String(10), nullable=False)
     engine_number = db.Column(db.String(17), nullable=False)
