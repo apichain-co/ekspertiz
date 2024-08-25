@@ -10,5 +10,7 @@ class Appointment(db.Model):
     model = db.Column(db.String(50), nullable=False)
     reminder_sent = db.Column(db.Boolean, default=False)
 
+    customer = db.relationship('Customer', backref='appointments')
+
     def __repr__(self):
-        return f'<Appointment {self.brand} - {self.date} {self.time}>'
+            return f'<Appointment {self.brand} - {self.date} {self.time}>'
