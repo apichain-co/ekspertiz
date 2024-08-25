@@ -1,0 +1,106 @@
+<!-- Vehicle Information -->
+<div class="grid grid-cols-2 gap-6">
+    <!-- Vehicle Plate -->
+    <div>
+        <label class="block text-sm font-medium text-gray-700">Plaka</label>
+        <input type="text" name="vehicle_plate" id="vehicle_plate" value="{{ form.vehicle_plate.data | skip_none }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+        {% if form.vehicle_plate.errors %}
+        <span class="text-red-500 text-sm">{{ form.vehicle_plate.errors[0] }}</span>
+        {% endif %}
+    </div>
+    <!-- Brand / Model -->
+    <div>
+        <label class="block text-sm font-medium text-gray-700">Marka</label>
+        <input type="text" name="brand" id="brand" value="{{ form.brand.data | skip_none }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+        {% if form.brand.errors %}
+        <span class="text-red-500 text-sm">{{ form.brand.errors[0] }}</span>
+        {% endif %}
+    </div>
+
+    <div>
+        <label class="block text-sm font-medium text-gray-700">Model</label>
+        <input type="text" name="model" id="model" value="{{ form.model.data | skip_none }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+        {% if form.model.errors %}
+        <span class="text-red-500 text-sm">{{ form.model.errors[0] }}</span>
+        {% endif %}
+    </div>
+
+    <!-- Model Year -->
+    <div>
+        <label class="block text-sm font-medium text-gray-700">Model Yılı</label>
+        <select name="model_year" id="model_year" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            <option value="">--Seçiniz--</option>
+            {% for year in model_years %}
+            <option value="{{ year | skip_none }}" {% if form.model_year.data == year %}selected{% endif %}>{{ year }}</option>
+            {% endfor %}
+        </select>
+        {% if form.model_year.errors %}
+        <span class="text-red-500 text-sm">{{ form.model_year.errors[0] }}</span>
+        {% endif %}
+    </div>
+    <!-- Gear Type -->
+    <div>
+        <label class="block text-sm font-medium text-gray-700">Vites Türü</label>
+        <select name="gear_type" id="gear_type" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            <option value="">--Seçiniz--</option>
+            {% for gear in gears %}
+            <option value="{{ gear.id | skip_none }}" {% if form.gear_type.data == gear.id %}selected{% endif %}>{{ gear.name }}</option>
+            {% endfor %}
+        </select>
+        {% if form.gear_type.errors %}
+        <span class="text-red-500 text-sm">{{ form.gear_type.errors[0] }}</span>
+        {% endif %}
+    </div>
+    <!-- Engine Number -->
+    <div>
+        <label class="block text-sm font-medium text-gray-700">Motor No</label>
+        <input type="text" name="engine_number" id="engine_number" value="{{ form.engine_number.data | skip_none  }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+        {% if form.engine_number.errors %}
+        <span class="text-red-500 text-sm">{{ form.engine_number.errors[0] }}</span>
+        {% endif %}
+    </div>
+    <!-- Chassis Number -->
+    <div>
+        <label class="block text-sm font-medium text-gray-700">Şasi No</label>
+        <input type="text" name="chassis_number" id="chassis_number" value="{{ form.chassis_number.data | skip_none  }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+        {% if form.chassis_number.errors %}
+        <span class="text-red-500 text-sm">{{ form.chassis_number.errors[0] }}</span>
+        {% endif %}
+    </div>
+    <!-- Vehicle Color -->
+    <div>
+        <label class="block text-sm font-medium text-gray-700">Araç Rengi</label>
+        <select name="color" id="color" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            <option value="">--Seçiniz--</option>
+            {% for color in colors %}
+            <option value="{{ color }}" {% if form.color.data == color %}selected{% endif %}>{{ color }}</option>
+            {% endfor %}
+        </select>
+        {% if form.color.errors %}
+        <span class="text-red-500 text-sm">{{ form.color.errors[0] }}</span>
+        {% endif %}
+    </div>
+    <!-- Fuel Type -->
+    <div>
+        <label class="block text-sm font-medium text-gray-700">Yakıt Türü</label>
+        <select name="fuel_type" id="fuel_type" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            <option value="">--Seçiniz--</option>
+            <option value="GASOLINE" {% if form.fuel_type.data == 'GASOLINE' %}selected{% endif %}>Benzin</option>
+            <option value="LPG" {% if form.fuel_type.data == 'LPG' %}selected{% endif %}>Benzin + LPG</option>
+            <option value="DIESEL" {% if form.fuel_type.data == 'DIESEL' %}selected{% endif %}>Dizel</option>
+            <option value="ELECTRIC" {% if form.fuel_type.data == 'ELECTRIC' %}selected{% endif %}>Elektrikli</option>
+            <option value="HYBRID" {% if form.fuel_type.data == 'HYBRID' %}selected{% endif %}>Hibrit</option>
+        </select>
+        {% if form.fuel_type.errors %}
+        <span class="text-red-500 text-sm">{{ form.fuel_type.errors[0] }}</span>
+        {% endif %}
+    </div>
+    <!-- Vehicle KM/Mileage -->
+    <div>
+        <label class="block text-sm font-medium text-gray-700">Araç KM / Mil</label>
+        <input type="text" name="vehicle_km" id="vehicle_km" value="{{ form.vehicle_km.data }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+        {% if form.vehicle_km.errors %}
+        <span class="text-red-500 text-sm">{{ form.vehicle_km.errors[0] }}</span>
+        {% endif %}
+    </div>
+</div>

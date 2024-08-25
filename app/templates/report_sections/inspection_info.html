@@ -1,0 +1,50 @@
+<!-- Inspection Information -->
+<div class="grid grid-cols-2 gap-6">
+    <!-- Created By Staff -->
+    <div>
+        <label class="block text-sm font-medium text-gray-700">Oluşturan Personel</label>
+        <input type="text" name="created_by" id="created_by" value="{{ form.created_by.data }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+        {% if form.created_by.errors %}
+        <span class="text-red-500 text-sm">{{ form.created_by.errors[0] }}</span>
+        {% endif %}
+    </div>
+    <!-- Inspection Date -->
+    <div>
+        <label class="block text-sm font-medium text-gray-700">Ekspertiz Tarihi</label>
+        <input type="date" name="inspection_date" id="inspection_date" value="{{ form.inspection_date.data }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+        {% if form.inspection_date.errors %}
+        <span class="text-red-500 text-sm">{{ form.inspection_date.errors[0] }}</span>
+        {% endif %}
+    </div>
+    <!-- Inspection Package -->
+    <div>
+        <label class="block text-sm font-medium text-gray-700">Ekspertiz Paketi</label>
+        <select name="package_id" id="package_id" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            <option value="">--Seçiniz--</option>
+            {% for package in packages %}
+            <option value="{{ package.id }}" {% if form.package_id.data == package.id %}selected{% endif %}>{{ package.name }}</option>
+            {% endfor %}
+        </select>
+        {% if form.package_id.errors %}
+        <span class="text-red-500 text-sm">{{ form.package_id.errors[0] }}</span>
+        {% endif %}
+    </div>
+    <div class="grid grid-cols-2 gap-6">
+        <!-- Package Price -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Paket Fiyatı</label>
+            <input type="text" name="package_price" id="package_price" value="{{ form.package_price.data }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            {% if form.package_price.errors %}
+            <span class="text-red-500 text-sm">{{ form.package_price.errors[0] }}</span>
+            {% endif %}
+        </div>
+        <!-- Package Price (Including VAT) -->
+        <div>
+            <label class="block text-sm font-medium text-gray-700">Paket Fiyatı (KDV Dahil)</label>
+            <input type="text" name="package_price_vat" id="package_price_vat" value="{{ form.package_price_vat.data }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            {% if form.package_price_vat.errors %}
+            <span class="text-red-500 text-sm">{{ form.package_price_vat.errors[0] }}</span>
+            {% endif %}
+        </div>
+    </div>
+</div>
