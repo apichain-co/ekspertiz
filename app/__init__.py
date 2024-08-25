@@ -1,5 +1,5 @@
 from flask import Flask
-from .database import db
+from .database import db, migrate
 from .models import appointment, customer, package, report, staff, branch, company
 
 # Import blueprints
@@ -17,6 +17,8 @@ def create_app(config_object='config.Config'):
     app.config.from_object(config_object)
 
     db.init_app(app)
+
+    migrate.init_app(app, db)
 
     with app.app_context():
         db.create_all()
