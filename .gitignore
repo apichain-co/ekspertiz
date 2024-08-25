@@ -162,3 +162,5 @@ cython_debug/
 #.idea/
 /.idea
 /.idea
+app/models/all_models.py
+ekspertiz.iml
