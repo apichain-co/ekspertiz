@@ -1,6 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, BooleanField, SelectField, DateField, SubmitField, TextAreaField
+from wtforms import StringField, IntegerField, BooleanField, SelectField, DateField, SubmitField, TextAreaField, \
+    DateTimeField
 from wtforms.validators import DataRequired, Optional, Length
+
 
 class ReportForm(FlaskForm):
     # Customer Information
@@ -11,14 +13,14 @@ class ReportForm(FlaskForm):
     customer_address = TextAreaField('Customer Address', validators=[Optional(), Length(max=255)])
 
     # Owner Information
-    owner_name = StringField('Owner Name', validators=[DataRequired(), Length(min=2, max=100)])
+    owner_name = StringField('Owner Name', validators=[Optional(), Length(min=2, max=100)])
     owner_tax_no = StringField('Owner Tax No', validators=[Optional(), Length(max=11)])
-    owner_phone = StringField('Owner Phone', validators=[DataRequired(), Length(min=10, max=15)])
-    owner_address = TextAreaField('Owner Address', validators=[DataRequired(), Length(max=255)])
+    owner_phone = StringField('Owner Phone', validators=[Optional(), Length(min=10, max=15)])
+    owner_address = TextAreaField('Owner Address', validators=[Optional(), Length(max=255)])
 
     # Vehicle Information
     vehicle_plate = StringField('Vehicle Plate', validators=[DataRequired(), Length(min=1, max=10)])
-    engine_number = StringField('Engine Number', validators=[DataRequired(), Length(min=1, max=17)])
+    engine_number = StringField('Engine Number', validators=[Optional(), Length(min=1, max=17)])
     brand = StringField('Brand', validators=[DataRequired(), Length(min=1, max=50)])
     model = StringField('Model', validators=[DataRequired(), Length(min=1, max=50)])
     chassis_number = StringField('Chassis Number', validators=[DataRequired(), Length(min=1, max=17)])
@@ -29,17 +31,18 @@ class ReportForm(FlaskForm):
     vehicle_km = IntegerField('Vehicle KM', validators=[DataRequired()])
 
     # Inspection Information
-    inspection_date = DateField('Inspection Date', validators=[DataRequired()], format='%Y-%m-%d')
+    created_at = DateTimeField('Created At', validators=[DataRequired()], format='%Y-%m-%dT%H:%M')
+    inspection_date = DateField('Inspection Date', validators=[Optional()], format='%Y-%m-%d')
     package_id = SelectField('Package ID', coerce=int, validators=[DataRequired()])
     created_by = IntegerField('Created By', validators=[DataRequired()])
     registration_document_seen = BooleanField('Registration Document Seen')
     operation = StringField('Operation', validators=[Optional(), Length(max=255)])
 
     # Agent Information
-    agent_name = StringField('Agent Name', validators=[DataRequired(), Length(min=2, max=100)])
+    agent_name = StringField('Agent Name', validators=[Optional(), Length(min=2, max=100)])
 
     # Additional fields for pricing
-    package_price = StringField('Package Price', validators=[Optional()])
-    package_price_vat = StringField('Package Price (VAT Included)', validators=[Optional()])
+    package_price = StringField('Package Price', validators=[DataRequired()])
+    package_price_vat = StringField('Package Price (VAT Included)', validators=[DataRequired()])
 
     submit = SubmitField('Create Report')
