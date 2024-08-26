@@ -8,7 +8,7 @@ from ..services.report_service import (
     get_or_create_vehicle_owner, get_or_create_vehicle
 )
 from sqlalchemy.exc import IntegrityError
-from ..forms.forms import ReportForm
+from ..forms.report_form import ReportForm
 
 reports = Blueprint('reports', __name__)
 
@@ -27,6 +27,9 @@ def report_list():
 def add_report():
     form = ReportForm()
     colors = get_available_colors()
+
+    if request.method == 'GET':
+        form.created_at.data = datetime.now()
 
     if form.validate_on_submit():
         form_data = form.data
@@ -70,28 +73,27 @@ def add_report():
 @reports.route('/report/update/<int:report_id>', methods=['GET', 'POST'])
 def update_report(report_id):
     report = Report.query.get_or_404(report_id)
+    form = ReportForm(obj=report)
 
-    if request.method == 'POST':
-        report.vehicle_plate = request.form['vehicle_plate']
-        report.chassis_number = request.form['chassis_number']
-        report.brand = request.form['brand']
-        report.model = request.form['model']
-        report.model_year = int(request.form['model_year'])
-        report.inspection_date = datetime.strptime(request.form['inspection_date'], '%Y-%m-%d').date()
-        report.customer_id = int(request.form['customer_id'])
-        report.package_id = int(request.form['package_id'])
-        report.created_by = int(request.form['created_by'])
-        report.registration_document_seen = bool(request.form['registration_document_seen'] == 'on') # check what it sends
-        report.operation = request.form['operation']
+    if form.validate_on_submit():
+        form.populate_obj(report)
 
-        db.session.commit()
-        flash('Report successfully updated!')
-        return redirect(url_for('reports.report_list'))
+        try:
+            db.session.commit()
+            flash('Rapor başarıyla güncellendi!', 'success')
+            return redirect(url_for('reports.report_list'))
+        except IntegrityError as e:
+            db.session.rollback()
+            flash(f'Tüm değerleri doğru girdiğinize emin olun!', 'error')
+        except Exception as e:
+            db.session.rollback()
+            flash(f'Beklenmedik bir hata oluştu!', 'error')
 
+    # Retrieve necessary data for the form
     customers = Customer.query.all()
     packages = Package.query.all()
     staff_members = Staff.query.all()
-    return render_template('report/update_report.html', report=report, customers=customers, packages=packages, staff=staff_members)
+    return render_template('report/update_report.html', form=form, customers=customers, packages=packages, staff=staff_members)
 
 
 @reports.route('/report/delete/<int:report_id>', methods=['POST'])
