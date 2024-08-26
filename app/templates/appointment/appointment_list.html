@@ -21,16 +21,6 @@
     <h2 class="text-lg font-bold text-gray-700">Tüm Randevular</h2>
 
 
-    {% with messages = get_flashed_messages() %}
-    {% if messages %}
-    <ul class="bg-yellow-100 p-4 rounded-lg shadow mt-4">
-        {% for message in messages %}
-        <li class="text-yellow-700">{{ message }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-    {% endwith %}
-
     <div class="bg-white p-4 rounded-lg shadow mt-4">
         {% if appointments %}
         <table class="min-w-full bg-white">

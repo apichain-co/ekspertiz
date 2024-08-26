@@ -3,23 +3,37 @@
     <!-- Created By Staff -->
     <div>
         <label class="block text-sm font-medium text-gray-700">Oluşturan Personel</label>
-        <input type="text" name="created_by" id="created_by" value="{{ form.created_by.data }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+        <input type="text" name="created_by" id="created_by" required
+               value="{{ form.created_by.data | skip_none }}"
+               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+               oninvalid="this.setCustomValidity('Lütfen oluşturan personel adını girin')"
+               oninput="setCustomValidity('')">
         {% if form.created_by.errors %}
         <span class="text-red-500 text-sm">{{ form.created_by.errors[0] }}</span>
         {% endif %}
     </div>
+
     <!-- Inspection Date -->
     <div>
         <label class="block text-sm font-medium text-gray-700">Ekspertiz Tarihi</label>
-        <input type="date" name="inspection_date" id="inspection_date" value="{{ form.inspection_date.data }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+        <input type="datetime-local" name="inspection_date" id="inspection_date" required
+               value="{{ form.created_at.data.strftime('%Y-%m-%dT%H:%M') if form.created_at.data else '' }}"
+               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+               oninvalid="this.setCustomValidity('Lütfen ekspertiz tarihini girin')"
+               oninput="setCustomValidity('')">
         {% if form.inspection_date.errors %}
         <span class="text-red-500 text-sm">{{ form.inspection_date.errors[0] }}</span>
         {% endif %}
     </div>
+
+
     <!-- Inspection Package -->
     <div>
         <label class="block text-sm font-medium text-gray-700">Ekspertiz Paketi</label>
-        <select name="package_id" id="package_id" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+        <select name="package_id" id="package_id" required
+                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                oninvalid="this.setCustomValidity('Lütfen bir ekspertiz paketi seçin')"
+                oninput="setCustomValidity('')">
             <option value="">--Seçiniz--</option>
             {% for package in packages %}
             <option value="{{ package.id }}" {% if form.package_id.data == package.id %}selected{% endif %}>{{ package.name }}</option>
@@ -29,19 +43,29 @@
         <span class="text-red-500 text-sm">{{ form.package_id.errors[0] }}</span>
         {% endif %}
     </div>
+
     <div class="grid grid-cols-2 gap-6">
         <!-- Package Price -->
         <div>
             <label class="block text-sm font-medium text-gray-700">Paket Fiyatı</label>
-            <input type="text" name="package_price" id="package_price" value="{{ form.package_price.data }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            <input type="text" name="package_price" id="package_price" required
+                   value="{{ form.package_price.data | skip_none }}"
+                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                   oninvalid="this.setCustomValidity('Lütfen paket fiyatını girin')"
+                   oninput="setCustomValidity('')">
             {% if form.package_price.errors %}
             <span class="text-red-500 text-sm">{{ form.package_price.errors[0] }}</span>
             {% endif %}
         </div>
+
         <!-- Package Price (Including VAT) -->
         <div>
             <label class="block text-sm font-medium text-gray-700">Paket Fiyatı (KDV Dahil)</label>
-            <input type="text" name="package_price_vat" id="package_price_vat" value="{{ form.package_price_vat.data }}" class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+            <input type="text" name="package_price_vat" id="package_price_vat" required
+                   value="{{ form.package_price_vat.data | skip_none }}"
+                   class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
+                   oninvalid="this.setCustomValidity('Lütfen KDV dahil paket fiyatını girin')"
+                   oninput="setCustomValidity('')">
             {% if form.package_price_vat.errors %}
             <span class="text-red-500 text-sm">{{ form.package_price_vat.errors[0] }}</span>
             {% endif %}
