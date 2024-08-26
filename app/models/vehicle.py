@@ -8,7 +8,7 @@ class Vehicle(db.Model):
     # TODO: ask which ones are really nullable
     id = db.Column(db.Integer, primary_key=True)
     plate = db.Column(db.String(10), nullable=False)
-    engine_number = db.Column(db.String(17), nullable=False)
+    engine_number = db.Column(db.String(17), nullable=True)
     brand = db.Column(db.String(50), nullable=False)
     model = db.Column(db.String(50), nullable=False)
     chassis_number = db.Column(db.String(17), nullable=False)

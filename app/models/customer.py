@@ -7,7 +7,7 @@ class Customer(db.Model):
     tc_tax_number = db.Column(db.String(11), nullable=True)
     email = db.Column(db.String(100))
     address = db.Column(db.String(255))
-    reports = db.relationship('Report', backref='customer', lazy=True)
+    reports = db.relationship('Report', back_populates='customer', lazy=True, overlaps="customer_reports,customer")
 
     def __repr__(self):
-        return f'<Customer {self.full_name}>'
+            return f'<Customer {self.full_name}>'

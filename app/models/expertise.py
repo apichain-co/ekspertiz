@@ -1,0 +1,55 @@
+from ..database import db
+
+
+class ExpertiseType(db.Model):
+    # ExpertiseType defines the type of expertise (e.g., Kaporta, Boya) and can be associated with multiple ExpertiseR.
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+
+    # Relationship to associate expertise type with multiple ExpertiseReports
+    expertise_reports = db.relationship('ExpertiseReport', back_populates='expertise_type')
+
+    def __repr__(self):
+        return f'<ExpertiseType {self.name}>'
+
+
+class ExpertiseReport(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    expertise_type_id = db.Column(db.Integer, db.ForeignKey('expertise_type.id'), nullable=False)
+    comment = db.Column(db.Text, nullable=True)
+
+    # Relationships
+    expertise_type = db.relationship('ExpertiseType', back_populates='expertise_reports')
+    features = db.relationship('ExpertiseFeature', back_populates='expertise_report')
+    # package_expertise = db.relationship('PackageExpertise', back_populates='expertise_reports')
+
+    def __repr__(self):
+        return f'<ExpertiseReport {self.expertise_type.name}>'
+
+
+class ExpertiseFeature(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100), nullable=False)
+    status = db.Column(db.String(50), nullable=True)
+    expertise_report_id = db.Column(db.Integer, db.ForeignKey('expertise_report.id'), nullable=False)
+
+    # Relationship back to ExpertiseReport
+    expertise_report = db.relationship('ExpertiseReport', back_populates='features')
+
+    def __repr__(self):
+        return f'<ExpertiseFeature {self.name} - {self.status}>'
+
+
+
+class PackageExpertise(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    package_id = db.Column(db.Integer, db.ForeignKey('package.id'), nullable=False)
+    expertise_type_id = db.Column(db.Integer, db.ForeignKey('expertise_type.id'), nullable=False)
+
+    # Relationships
+    package = db.relationship('Package', back_populates='package_expertises')
+    expertise_type = db.relationship('ExpertiseType')
+    # expertise_reports = db.relationship('ExpertiseReport', back_populates='package_expertise')
+
+    def __repr__(self):
+        return f'<PackageExpertise {self.package.name} - {self.expertise_type.name}>'
