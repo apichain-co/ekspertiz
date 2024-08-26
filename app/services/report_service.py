@@ -4,18 +4,21 @@ from datetime import datetime
 
 
 def create_report(form_data, customer_id):
+    current_datetime = datetime.now()
+
     new_report = Report(
         vehicle_plate=form_data['vehicle_plate'],
         chassis_number=form_data['chassis_number'],
         brand=form_data['brand'],
         model=form_data['model'],
         model_year=int(form_data['model_year']),
-        inspection_date=datetime.strptime(form_data['inspection_date'], '%Y-%m-%d').date(),
+        #inspection_date=datetime.strptime(form_data['inspection_date'], '%Y-%m-%d').date(),
         customer_id=customer_id,
         package_id=int(form_data['package_id']),
         created_by=int(form_data['created_by']),
         registration_document_seen=form_data.get('registration_document_seen') == 'on',
-        operation=form_data['operation']
+        operation=form_data['operation'],
+        created_at=current_datetime
     )
     db.session.add(new_report)
     db.session.commit()
