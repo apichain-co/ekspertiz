@@ -33,7 +33,7 @@ class ReportForm(FlaskForm):
     # Inspection Information
     created_at = DateTimeField('Created At', validators=[DataRequired()], format='%Y-%m-%dT%H:%M')
     inspection_date = DateField('Inspection Date', validators=[Optional()], format='%Y-%m-%d')
-    package_id = SelectField('Package ID', coerce=int, validators=[DataRequired()])
+    package_id = SelectField('Package ID', coerce=int, validators=[DataRequired()], choices=[])
     created_by = IntegerField('Created By', validators=[DataRequired()])
     registration_document_seen = BooleanField('Registration Document Seen')
     operation = StringField('Operation', validators=[Optional(), Length(max=255)])
@@ -42,7 +42,4 @@ class ReportForm(FlaskForm):
     agent_name = StringField('Agent Name', validators=[Optional(), Length(min=2, max=100)])
 
     # Additional fields for pricing
-    package_price = StringField('Package Price', validators=[DataRequired()])
-    package_price_vat = StringField('Package Price (VAT Included)', validators=[DataRequired()])
-
     submit = SubmitField('Create Report')
