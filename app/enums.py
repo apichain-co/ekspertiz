@@ -1,10 +1,11 @@
 from enum import Enum
-from ..database import db
+from app.database import db
 
 class TransmissionType(Enum):
     MANUAL = "Düz vites"
     AUTOMATIC = "Otomatik"
     SEMI_AUTOMATIC = "Yarı otomatik"
+
 
 class FuelType(Enum):
     GASOLINE = "Benzin"
@@ -12,6 +13,7 @@ class FuelType(Enum):
     DIESEL = "Dizel"
     ELECTRIC = "Elektrikli"
     HYBRID = "Hibrit"
+
 
 class Color(Enum):
     BEIGE = "Bej"
@@ -32,3 +34,10 @@ class Color(Enum):
     TURQUOISE = "Turkuaz"
     ORANGE = "Turuncu"
     GREEN = "Yeşil"
+
+
+class ExpertiseAnswer:
+
+    class BasicControl(Enum):
+        pass
+
