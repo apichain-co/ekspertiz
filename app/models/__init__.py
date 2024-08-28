@@ -1,4 +1,3 @@
-from .enums import TransmissionType, FuelType, Color
 from .report import Report
 from .customer import Customer
 from .package import Package

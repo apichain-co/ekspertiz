@@ -1,7 +1,7 @@
 from datetime import datetime
 from sqlalchemy.orm import validates
 from ..database import db
-from . import TransmissionType, FuelType, Color
+from app.enums import TransmissionType, FuelType, Color
 
 
 class Vehicle(db.Model):
@@ -17,7 +17,6 @@ class Vehicle(db.Model):
     transmission_type = db.Column(db.Enum(TransmissionType), nullable=False)
     fuel_type = db.Column(db.Enum(FuelType), nullable=False)
     mileage = db.Column(db.Integer, nullable=False)
-    report_id = db.Column(db.Integer, db.ForeignKey('report.id'), nullable=False)
 
     @validates('model_year')
     def validate_model_year(self, key, value):

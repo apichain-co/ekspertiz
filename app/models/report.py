@@ -4,7 +4,7 @@ from ..database import db
 
 class Report(db.Model):
     id = db.Column(db.Integer, primary_key=True)
-    inspection_date = db.Column(db.Date, nullable=False)
+    inspection_date = db.Column(db.Date, nullable=True)
     vehicle_plate = db.Column(db.String(10), nullable=False)
     chassis_number = db.Column(db.String(17), nullable=False)
     brand = db.Column(db.String(50), nullable=False)
