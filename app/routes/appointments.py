@@ -32,7 +32,7 @@ def add_appointment():
         # finds customer with customer name & phone num, if not found creates new customer
         if not customer:
             customer = Customer(full_name=customer_name, phone_number=phone_number)
-            db.session.add(customer)
+            db.session.add_package(customer)
             db.session.commit()
 
         new_appointment = Appointment(
@@ -42,7 +42,7 @@ def add_appointment():
             brand=brand,
             model=model
         )
-        db.session.add(new_appointment)
+        db.session.add_package(new_appointment)
         db.session.commit()
         flash('New appointment successfully created!', 'success')
         return redirect(url_for('appointments.appointment_list'))

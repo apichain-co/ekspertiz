@@ -28,7 +28,7 @@ def add_vehicle_owner():
             address=address,
             report_id=report_id
         )
-        db.session.add(new_vehicle_owner)
+        db.session.add_package(new_vehicle_owner)
         db.session.commit()
         flash('New vehicle owner successfully created!')
         return redirect(url_for('vehicle_owners.vehicle_owner_list'))

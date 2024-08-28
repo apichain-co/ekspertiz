@@ -29,7 +29,7 @@ def add_branch():
             fax=fax,
             email=email
         )
-        db.session.add(new_branch)
+        db.session.add_package(new_branch)
         db.session.commit()
         flash('New branch successfully created!')
         return redirect(url_for('branches.branch_list'))
