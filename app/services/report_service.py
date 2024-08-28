@@ -1,29 +1,73 @@
-from ..models import Report, Customer, VehicleOwner, Vehicle, Agent
+import json
+from ..models import Report, Customer, VehicleOwner, Vehicle, Agent, PackageExpertise,  ExpertiseReport, ExpertiseType, ExpertiseFeature
 from ..database import db
 from datetime import datetime
 
 
-def create_report(form_data, customer_id):
-    current_datetime = datetime.now()
+def load_expertise_map(file_path='data/expertise_map.json'):
+    try:
+        with open(file_path, 'r', encoding='utf-8') as file:
+            expertise_map = json.load(file)
+        return expertise_map
+    except FileNotFoundError:
+        print(f"JSON file not found: {file_path}")
+        return {}
+    except json.JSONDecodeError:
+        print(f"Error decoding JSON from file: {file_path}")
+        return {}
 
-    new_report = Report(
-        vehicle_plate=form_data['vehicle_plate'],
-        chassis_number=form_data['chassis_number'],
-        brand=form_data['brand'],
-        model=form_data['model'],
-        model_year=int(form_data['model_year']),
-        #inspection_date=datetime.strptime(form_data['inspection_date'], '%Y-%m-%d').date(),
+
+def get_default_features_for_expertise_type(expertise_name, expertise_map=None):
+    if expertise_map is None:
+        expertise_map = load_expertise_map()
+
+    return expertise_map.get(expertise_name, [])
+
+
+def create_report(inspection_date, vehicle_plate, chassis_number, brand, model, model_year, customer_id, package_id, operation, created_by, registration_document_seen):
+    report = Report(
+        inspection_date=inspection_date,
+        vehicle_plate=vehicle_plate,
+        chassis_number=chassis_number,
+        brand=brand,
+        model=model,
+        model_year=model_year,
         customer_id=customer_id,
-        package_id=int(form_data['package_id']),
-        created_by=int(form_data['created_by']),
-        registration_document_seen=form_data.get('registration_document_seen') == 'on',
-        operation=form_data['operation'],
-        created_at=current_datetime
+        package_id=package_id,
+        operation=operation,
+        created_by=created_by,
+        registration_document_seen=registration_document_seen
     )
-    db.session.add(new_report)
+    db.session.add_package(report)
     db.session.commit()
-    return new_report
 
+    package_expertises = PackageExpertise.query.filter_by(package_id=package_id).all()
+    if not package_expertises:
+        print(f"No expertise types found for package ID {package_id}.")
+        return
+
+    for package_expertise in package_expertises:
+        expertise_report = ExpertiseReport(
+            expertise_type_id=package_expertise.expertise_type_id,
+            comment=""
+        )
+        db.session.add_package(expertise_report)
+        db.session.commit()
+
+        expertise_type = ExpertiseType.query.get(package_expertise.expertise_type_id)
+        default_features = get_default_features_for_expertise_type(expertise_type.name)
+        for feature_name, status in default_features:
+            feature = ExpertiseFeature(
+                name=feature_name,
+                status=status,
+                expertise_report_id=expertise_report.id
+            )
+            db.session.add_package(feature)
+
+        db.session.commit()
+
+    print(f"Report for vehicle '{vehicle_plate}' created successfully with associated expertise reports.")
+    return report
 
 
 def get_or_create_customer(form_data):
@@ -43,7 +87,7 @@ def get_or_create_customer(form_data):
             email=form_data['customer_email'],
             address=form_data['customer_address']
         )
-        db.session.add(customer)
+        db.session.add_package(customer)
         db.session.commit()
     return customer
 
@@ -63,7 +107,7 @@ def get_or_create_vehicle_owner(form_data):
             phone_number=form_data['owner_phone'],
             address=form_data['owner_address']
         )
-        db.session.add(vehicle_owner)
+        db.session.add_package(vehicle_owner)
         db.session.commit()
     return vehicle_owner
 
@@ -73,12 +117,12 @@ def get_or_create_agent(agent_name):
 
     if not agent:
         agent = Agent(full_name=agent_name)
-        db.session.add(agent)
+        db.session.add_package(agent)
         db.session.commit()
     return agent
 
 
-def get_or_create_vehicle(form_data, report_id):
+def get_or_create_vehicle(form_data):
     vehicle = Vehicle.query.filter_by(
         plate=form_data['vehicle_plate'],
         chassis_number=form_data['chassis_number']
@@ -96,9 +140,8 @@ def get_or_create_vehicle(form_data, report_id):
             transmission_type=form_data['gear_type'],
             fuel_type=form_data['fuel_type'],
             mileage=int(form_data['vehicle_km']),
-            report_id=report_id
         )
-        db.session.add(vehicle)
+        db.session.add_package(vehicle)
         db.session.commit()
     return vehicle
 
