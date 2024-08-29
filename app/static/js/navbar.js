@@ -55,3 +55,23 @@ function handleFormSubmission(event) {
 
 // Attach the main function to the click event of the button
 document.getElementById("openCreateAppointmentModal").onclick = openCreateAppointmentModal;
+
+
+document.querySelectorAll('.navbar').forEach(function(navbar) {
+    let timeout;
+
+    // When the mouse enters the navbar or dropdown menu
+    navbar.addEventListener('mouseenter', function() {
+        clearTimeout(timeout);
+        this.querySelector('.dropdown-menu').style.visibility = 'visible';
+        this.querySelector('.dropdown-menu').style.opacity = '1';
+    });
+
+    // When the mouse leaves the navbar or dropdown menu
+    navbar.addEventListener('mouseleave', function() {
+        timeout = setTimeout(() => {
+            this.querySelector('.dropdown-menu').style.visibility = 'hidden';
+            this.querySelector('.dropdown-menu').style.opacity = '0';
+        }, 200); // Delay to allow mouse movement
+    });
+});
