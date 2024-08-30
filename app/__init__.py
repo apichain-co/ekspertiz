@@ -5,7 +5,6 @@ import logging
 from logging.handlers import RotatingFileHandler
 from .services.commands import register_commands
 from .services.expertise_initializer import ExpertiseInitializer
-from .services.package_initializer import create_standard_package
 
 
 # Import blueprints
@@ -39,8 +38,6 @@ def create_app(config_object='config.Config'):
     with app.app_context():
         db.create_all()
         ExpertiseInitializer.initialize_expertise_reports()  # Initialize expertise reports
-        create_standard_package()
-        # print_package_reports("Standard Package")
 
 
 

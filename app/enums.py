@@ -1,5 +1,5 @@
 from enum import Enum
-from app.database import db
+
 
 class TransmissionType(Enum):
     MANUAL = "Düz vites"
