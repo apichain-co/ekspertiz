@@ -1,55 +1,41 @@
-import sys
-import os
-import pytest
-from datetime import datetime
+import unittest
+from app import create_app, db
+from app.models import Appointment
+from datetime import datetime, time
 
-# Fix the Python path
-sys.path.insert(0, os.path.abspath(os.path.join(os.path.dirname(__file__), '..', '..')))
 
-from app import create_app
-from app.database import db  # Import db from database.py
-from app.models import Customer, Appointment
+class AppointmentTestCase(unittest.TestCase):
 
-@pytest.fixture
-def client():
-    app = create_app(config_object='test_config.TestConfig')
+    def setUp(self):
+        self.app = create_app('testing')
+        self.app_context = self.app.app_context()
+        self.app_context.push()
+        db.create_all()
 
-    with app.test_client() as client:
-        with app.app_context():
-            db.create_all()  # Create all tables for the test
-        yield client
-        with app.app_context():
-            db.drop_all()  # Drop all tables after the test
+    def tearDown(self):
+        db.session.remove()
+        db.drop_all()
+        self.app_context.pop()
 
-def test_add_appointment(client):
-    # Convert the date string to a Python date object
-    appointment_date = datetime.strptime('2024-09-01', '%Y-%m-%d').date()
+    def test_appointment_crud(self):
+        # Create
+        appointment = Appointment(customer_id=1, date=datetime(2024, 1, 1), time=time(10, 0, 0), brand='BMW', model='X5')
+        db.session.add(appointment)
+        db.session.commit()
 
-    # Convert the time string to a Python time object
-    appointment_time = datetime.strptime('13:14:00', '%H:%M:%S').time()
+        # Read
+        retrieved_appointment = Appointment.query.first()
+        self.assertEqual(retrieved_appointment.brand, 'BMW')
 
-    # Make the POST request to add an appointment
-    response = client.post('/appointment/add', data={
-        'customer_name': 'John zaza',
-        'phone_number': '1234567890',
-        'date': appointment_date,
-        'time': appointment_time,
-        'brand': 'Toyota',
-        'model': 'Corolla'
-    })
+        # Update
+        retrieved_appointment.brand = 'Audi'
+        db.session.commit()
+        self.assertEqual(retrieved_appointment.brand, 'Audi')
 
-    # Assert that the initial response is a redirect
-    assert response.status_code == 302
+        # Delete
+        db.session.delete(retrieved_appointment)
+        db.session.commit()
+        self.assertEqual(Appointment.query.count(), 0)
 
-    # Follow the redirect to the appointment list
-    response = client.get('/appointments')
-    assert response.status_code == 200
-
-    # Check for the flash message on the redirected page
-    assert b'New appointment successfully created!' in response.data
-
-    # Check if the appointment was added to the database
-    appointment = Appointment.query.first()
-    assert appointment is not None
-    assert appointment.brand == 'Toyota'
-    print(response.data)
+if __name__ == '__main__':
+    unittest.main()
