@@ -164,3 +164,4 @@ cython_debug/
 /.idea
 app/models/all_models.py
 ekspertiz.iml
+identifier.sqlite
