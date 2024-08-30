@@ -68,23 +68,24 @@ def create_report(inspection_date, vehicle_id, customer_id, package_id, operatio
 
 def get_or_create_customer(form_data):
     customer = Customer.query.filter_by(
-        full_name=form_data['customer_name'],
-        phone_number=form_data['customer_phone'],
-        tc_tax_number=form_data['customer_tax_no'],
-        email=form_data['customer_email'],
-        address=form_data['customer_address']
+        full_name=form_data.get('customer_name'),
+        phone_number=form_data.get('customer_phone'),
+        tc_tax_number=form_data.get('customer_tax_no'),
+        email=form_data.get('customer_email'),
+        address=form_data.get('customer_address')
     ).first()
 
     if not customer:
         customer = Customer(
-            full_name=form_data['customer_name'],
-            phone_number=form_data['customer_phone'],
-            tc_tax_number=form_data['customer_tax_no'],
-            email=form_data['customer_email'],
-            address=form_data['customer_address']
+            full_name=form_data.get('customer_name') or None,
+            phone_number=form_data.get('customer_phone') or None,
+            tc_tax_number=form_data.get('customer_tax_no') or None,
+            email=form_data.get('customer_email') or None,
+            address=form_data.get('customer_address') or None
         )
         db.session.add(customer)
         db.session.commit()
+
     return customer
 
 
