@@ -1,9 +1,11 @@
 from datetime import datetime
 from sqlalchemy.orm import validates
 from ..database import db
-from app.enums import TransmissionType, FuelType, Color
+from ..enums import TransmissionType, FuelType, Color
+
 
 class Vehicle(db.Model):
+    __tablename__ = 'vehicle'
     id = db.Column(db.Integer, primary_key=True)
     plate = db.Column(db.String(10), nullable=False)
     engine_number = db.Column(db.String(17), nullable=True)

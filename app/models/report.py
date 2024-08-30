@@ -3,6 +3,7 @@ from ..database import db
 
 
 class Report(db.Model):
+    __tablename__ = 'report'
     id = db.Column(db.Integer, primary_key=True)
     inspection_date = db.Column(db.DateTime, nullable=False)
     vehicle_id = db.Column(db.Integer, db.ForeignKey('vehicle.id'), nullable=False)

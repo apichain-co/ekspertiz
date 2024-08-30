@@ -2,9 +2,10 @@ from ..database import db
 
 
 class ExpertiseType(db.Model):
+    __tablename__ = 'expertise_types'
     # ExpertiseType defines the type of expertise (e.g., Kaporta, Boya) and can be associated with multiple ExpertiseR.
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), nullable=False)
+    name = db.Column(db.String(100), nullable=False, unique=True)
 
     # Relationship to associate expertise type with multiple ExpertiseReports
     expertise_reports = db.relationship('ExpertiseReport', back_populates='expertise_type')
@@ -14,8 +15,9 @@ class ExpertiseType(db.Model):
 
 
 class ExpertiseReport(db.Model):
+    __tablename__ = 'expertise_reports'
     id = db.Column(db.Integer, primary_key=True)
-    expertise_type_id = db.Column(db.Integer, db.ForeignKey('expertise_type.id'), nullable=False)
+    expertise_type_id = db.Column(db.Integer, db.ForeignKey('expertise_types.id'), nullable=False)
     comment = db.Column(db.Text, nullable=True)
 
     # Relationships
@@ -28,10 +30,11 @@ class ExpertiseReport(db.Model):
 
 
 class ExpertiseFeature(db.Model):
+    __tablename__ = 'expertise_features'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False)
     status = db.Column(db.String(50), nullable=True)
-    expertise_report_id = db.Column(db.Integer, db.ForeignKey('expertise_report.id'), nullable=False)
+    expertise_report_id = db.Column(db.Integer, db.ForeignKey('expertise_reports.id'), nullable=False)
 
     # Relationship back to ExpertiseReport
     expertise_report = db.relationship('ExpertiseReport', back_populates='features')
@@ -42,9 +45,10 @@ class ExpertiseFeature(db.Model):
 
 
 class PackageExpertise(db.Model):
+    __tablename__ = 'package_expertises'
     id = db.Column(db.Integer, primary_key=True)
     package_id = db.Column(db.Integer, db.ForeignKey('package.id'), nullable=False)
-    expertise_type_id = db.Column(db.Integer, db.ForeignKey('expertise_type.id'), nullable=False)
+    expertise_type_id = db.Column(db.Integer, db.ForeignKey('expertise_types.id'), nullable=False)
 
     # Relationships
     package = db.relationship('Package', back_populates='package_expertises')

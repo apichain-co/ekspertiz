@@ -2,6 +2,7 @@ from ..database import db
 
 
 class Appointment(db.Model):
+    __tablename__ = 'appointment'
     id = db.Column(db.Integer, primary_key=True)
     customer_id = db.Column(db.Integer, db.ForeignKey('customer.id'), nullable=False)
     date = db.Column(db.Date, nullable=False)
