@@ -1,6 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from ..database import db
-from ..models import Report, Customer, Package, Staff
+from ..enums import FuelType, TransmissionType, Color
+from ..models import Report, Customer, Package, Staff, Vehicle
 from datetime import datetime
 from ..services.enum_service import COLOR_MAPPING, TRANSMISSION_TYPE_MAPPING, FUEL_TYPE_MAPPING, map_to_enum
 from ..services.report_service import (get_or_create_customer, create_report, get_or_create_vehicle_owner,
@@ -17,27 +18,62 @@ def report_list():
     per_page = request.args.get('per_page', 10, type=int)  # Items per page, default is 10
     paginated_reports = Report.query.paginate(page=page, per_page=per_page, error_out=False)
 
-    return render_template('report/report_list.html', reports=paginated_reports.items, pagination=paginated_reports)
+    return render_template('report_sections/report_list.html', reports=paginated_reports.items, pagination=paginated_reports)
+
+
 
 
 @reports.route('/report/add', methods=['GET', 'POST'])
 def add_report():
     form = ReportForm()
 
-    # Populate the package_id choices dynamically
-    form.package_id.choices = [(pkg.id, pkg.name) for pkg in Package.query.all()]
+    # Define choices for the form fields
+    fuel_types = [(fuel.name, fuel.value) for fuel in FuelType]
+    transmission_types = [(transmission.name, transmission.value) for transmission in TransmissionType]
+    colors = [(color.name, color.value) for color in Color]
 
-    if request.method == 'GET':
-        form.created_at.data = datetime.now()
-        packages = Package.query.all()
-        return render_template('reports.html', form=form, packages=packages)
-    # print(form.data)
+    # Populate dynamic choices for SelectFields
+    form.package_id.choices = [(pkg.id, pkg.name) for pkg in Package.query.all()]
+    form.color.choices = colors
+    form.gear_type.choices = transmission_types
+    form.fuel_type.choices = fuel_types
+
+    packages = Package.query.all()
+    current_year = datetime.now().year
+
+    form.created_at.data = datetime.now()
+    form.inspection_date.data = datetime.now()
+
+    vehicle_info = None  # Initialize vehicle_info
 
     if form.validate_on_submit():
         try:
-            gear_type = map_to_enum(form.gear_type.data, TRANSMISSION_TYPE_MAPPING)
-            fuel_type = map_to_enum(form.fuel_type.data, FUEL_TYPE_MAPPING)
-            color = map_to_enum(form.color.data, COLOR_MAPPING)
+            # Create the Vehicle
+            vehicle = get_or_create_vehicle({
+                'vehicle_plate': form.vehicle_plate.data,
+                'engine_number': form.engine_number.data,
+                'brand': form.brand.data,
+                'model': form.model.data,
+                'chassis_number': form.chassis_number.data,
+                'color': form.color.data,
+                'model_year': form.model_year.data,
+                'gear_type': form.gear_type.data,
+                'fuel_type': form.fuel_type.data,
+                'vehicle_km': form.vehicle_km.data,
+            })
+
+            # Update vehicle_info for use in rendering the form
+            vehicle_info = {
+                'plate': vehicle.plate,
+                'brand': vehicle.brand,
+                'model': vehicle.model,
+                'chassis_number': vehicle.chassis_number,
+                'color': vehicle.color.value,
+                'model_year': vehicle.model_year,
+                'transmission_type': vehicle.transmission_type.value,
+                'fuel_type': vehicle.fuel_type.value,
+                'mileage': vehicle.mileage
+            }
 
             # Create or get the Customer with all provided data
             customer_data = {
@@ -48,6 +84,7 @@ def add_report():
                 'customer_address': form.customer_address.data
             }
             customer = get_or_create_customer(customer_data)
+
             # Optionally create or get the VehicleOwner if the data is provided
             vehicle_owner = None
             if form.owner_name.data:
@@ -63,43 +100,25 @@ def add_report():
             agent = None
             if form.agent_name.data:
                 agent = get_or_create_agent(form.agent_name.data)
-
-            vehicle = get_or_create_vehicle({
-                'vehicle_plate': form.vehicle_plate.data,
-                'engine_number': form.engine_number.data,
-                'brand': form.brand.data,
-                'model': form.model.data,
-                'chassis_number': form.chassis_number.data,
-                'color': color,
-                'model_year': form.model_year.data,
-                'gear_type': gear_type,
-                'fuel_type': fuel_type,
-                'vehicle_km': form.vehicle_km.data
-            })
-
+            # Create a new Report with the generated vehicle details
             new_report = create_report(
                 inspection_date=form.inspection_date.data,
-                vehicle_plate=form.vehicle_plate.data,
-                chassis_number=form.chassis_number.data,
-                brand=form.brand.data,
-                model=form.model.data,
-                model_year=form.model_year.data,
+                vehicle_id=vehicle.id,
                 customer_id=customer.id,
                 package_id=form.package_id.data,
                 operation=form.operation.data,
                 created_by=form.created_by.data,
                 registration_document_seen=form.registration_document_seen.data
             )
-
             # Optionally link VehicleOwner to the report if it was created
             if vehicle_owner:
                 vehicle_owner.report_id = new_report.id
-                db.session.add_package(vehicle_owner)
+                db.session.add(vehicle_owner)
 
             # Optionally link Agent to the report if it was created
             if agent:
                 agent.report_id = new_report.id
-                db.session.add_package(agent)
+                db.session.add(agent)
 
             # Commit all changes
             db.session.commit()
@@ -109,19 +128,31 @@ def add_report():
 
         except IntegrityError as e:
             db.session.rollback()
-            flash(f'Tüm değerleri doğru girdiğinize emin olun!', 'error')
+            flash('Tüm değerleri doğru girdiğinize emin olun!', 'error')
             print(f"IntegrityError: {e}")
 
         except Exception as e:
             db.session.rollback()
-            flash(f'Beklenmedik bir hata oluştu!', 'error')
+            flash('Beklenmedik bir hata oluştu!', 'error')
             print(f"Unexpected Error: {e}")
+
     else:
         print("Form validation failed")
         print(form.errors)
 
-    # Retrieve data for the form and render the template
-    return render_template('reports.html', form=form)
+    # Render the form with errors and vehicle info if available
+    return render_template(
+        'reports.html',
+        form=form,
+        fuel_types=fuel_types,
+        transmission_types=transmission_types,
+        colors=colors,
+        vehicle_info=vehicle_info,
+        packages=packages,
+        current_year=current_year
+    )
+
+
 
 
 @reports.route('/report/update/<int:report_id>', methods=['GET', 'POST'])
