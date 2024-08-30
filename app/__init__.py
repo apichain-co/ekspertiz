@@ -1,11 +1,15 @@
+import os
 from flask import Flask
 from .database import db, migrate
-from .models import appointment, customer, package, report, staff, branch, company
+from .models import (
+    Agent, Appointment, Branch, Company,
+    Customer, Package, Report, Staff, Vehicle, VehicleOwner,
+    ExpertiseType, ExpertiseFeature, ExpertiseReport, PackageExpertise)
 import logging
 from logging.handlers import RotatingFileHandler
 from .services.commands import register_commands
 from .services.expertise_initializer import ExpertiseInitializer
-
+from .tests.test_config import TestConfig
 
 # Import blueprints
 from .routes.appointments import appointments as appointments_bp
@@ -19,16 +23,19 @@ from .routes.errors import errors as errors_bp
 from .routes.packages import packages as packages_bp
 
 
-
-def create_app(config_object='config.Config'):
+def create_app(config_object=None):
     app = Flask(__name__)
-    app.config.from_object(config_object)
-
-    if not app.debug:
+    if config_object == 'testing':
+        app.config.from_object(TestConfig)
+        app.logger.setLevel(logging.CRITICAL)
+    else:
+        app.config.from_object('config.Config')
+        if not os.path.exists('logs'):
+            os.mkdir('logs')
         file_handler = RotatingFileHandler('logs/error.log', maxBytes=10240, backupCount=10)
-        file_handler.setLevel(logging.ERROR)
-        formatter = logging.Formatter('%(asctime)s - %(levelname)s - %(message)s [in %(pathname)s:%(lineno)d]')
-        file_handler.setFormatter(formatter)
+        file_handler.setFormatter(logging.Formatter(
+            '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
+        file_handler.setLevel(logging.INFO)
         app.logger.addHandler(file_handler)
 
     db.init_app(app)
@@ -37,9 +44,8 @@ def create_app(config_object='config.Config'):
 
     with app.app_context():
         db.create_all()
+        db.session.commit()
         ExpertiseInitializer.initialize_expertise_reports()  # Initialize expertise reports
-
-
 
     register_commands(app)
 
