@@ -30,6 +30,8 @@
         {% include 'settings/tabs.html' %}
 
         <form action="{{ url_for('companies.update_company', company_id=company.id) }}" method="POST" class="space-y-4">
+            {{ form.hidden_tag() }}
+
             <!-- Tab 1: Firma Bilgileri -->
             <div id="tab1" class="tab-content active">
                 {% include 'settings/company.html' %}

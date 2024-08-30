@@ -4,8 +4,9 @@
 <div class="bg-blue-500 p-4">
     <div class="container mx-auto flex justify-between items-center">
         <div class="text-white text-lg font-bold">
-            <i class="fas fa-th-large">            <a href="hom"> </a>
+            <i class="fas fa-th-large">
             </i>
+            <a href="home.html"> </a>
         </div>
         <div class="flex space-x-8 text-white">
             <!-- Ekspertiz Dropdown -->
@@ -48,7 +49,7 @@
                 <div class="dropdown-menu">
                     <a href="{{ url_for('companies.company_detail') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Firma Ayarları</a>
                     <a href="{{ url_for('packages.packages_list') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Ekspertiz Paketleri</a>
-                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Müşteriler</a>
+                    <a href="{{ url_for('customers.customer_list') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Müşteriler</a>
                     <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Bayilik Ayarları</a>
                     <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Bayilik Paketleri</a>
                     <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Personel Yönetimi</a>

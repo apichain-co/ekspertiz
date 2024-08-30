@@ -97,7 +97,7 @@
     <div class="modal-content">
         <span class="close" id="closeModal">&times;</span>
         <h2 class="text-xl font-semibold mb-4">Paket Oluştur</h2>
-        <form id="packageForm" action="{{ url_for('packages.add_package') }}" method="POST" class="space-y-4">
+        <form id="packageForm" action="{{ url_for('packages.add_pckg') }}" method="POST" class="space-y-4">
             {{ form.hidden_tag() }}
 
             <div>
@@ -135,7 +135,7 @@
 
 <script src="../static/js/packages.js"></script>
 <script>
-    const addPackageUrl = "{{ url_for('packages.add_package') }}";
+    const addPackageUrl = "{{ url_for('packages.add_pckg') }}";
     {% with messages = get_flashed_messages(with_categories=true) %}
     {% if messages %}
     {% for category, message in messages %}
