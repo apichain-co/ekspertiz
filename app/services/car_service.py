@@ -1,4 +1,5 @@
-from ..models import Vehicle, Color
+from ..models import Vehicle
+from ..enums import Color
 from ..database import db
 
 
