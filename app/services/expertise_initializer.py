@@ -21,7 +21,7 @@ class ExpertiseInitializer:
         expertise_type = ExpertiseType.query.filter_by(name=expertise_name).first()
         if not expertise_type:
             expertise_type = ExpertiseType(name=expertise_name)
-            db.session.add_package(expertise_type)
+            db.session.add(expertise_type)  # Corrected line
             db.session.commit()
         else:
             existing_report = ExpertiseReport.query.filter_by(expertise_type=expertise_type).first()
@@ -29,12 +29,12 @@ class ExpertiseInitializer:
                 return False  # Indicates that the report already exists
 
         expertise_report = ExpertiseReport(expertise_type=expertise_type, comment=comment)
-        db.session.add_package(expertise_report)
+        db.session.add(expertise_report)  # Corrected line
         db.session.commit()
 
         for part in parts_and_statuses:
             feature = ExpertiseFeature(name=part['part_name'], status=part['default_status'], expertise_report=expertise_report)
-            db.session.add_package(feature)
+            db.session.add(feature)  # Corrected line
 
         db.session.commit()
 
