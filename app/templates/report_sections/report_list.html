@@ -1,47 +1,79 @@
-{% block content %}
-<h2>Reports</h2>
-<a href="{{ url_for('reports.add_report') }}">Add New Report</a>
-<table>
-    <thead>
-    <tr>
-        <th>ID</th>
-        <th>Vehicle Plate</th>
-        <th>Chassis Number</th>
-        <th>Brand</th>
-        <th>Model</th>
-        <th>Inspection Date</th>
-        <th>Actions</th>
-    </tr>
-    </thead>
-    <tbody>
-    {% for report in reports %}
-    <tr>
-        <td>{{ report.id }}</td>
-        <td>{{ report.vehicle_plate }}</td>
-        <td>{{ report.chassis_number }}</td>
-        <td>{{ report.brand }}</td>
-        <td>{{ report.model }}</td>
-        <td>{{ report.inspection_date }}</td>
-        <td>
-            <a href="{{ url_for('reports.update_report', report_id=report.id) }}">Edit</a>
-            <form action="{{ url_for('reports.delete_report', report_id=report.id) }}" method="post" style="display:inline;">
-                <button type="submit" onclick="return confirm('Are you sure you want to delete this report?');">Delete</button>
-            </form>
-        </td>
-    </tr>
-    {% endfor %}
-    </tbody>
-</table>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Report List</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
+</head>
+<body>
+{% include "navbar.html" %}
+<div id="createAppointmentModal"></div>
 
-<div>
-    <span>Page {{ pagination.page }} of {{ pagination.pages }}</span>
-    <ul>
-        {% if pagination.has_prev %}
-        <li><a href="{{ url_for('reports.report_list', page=pagination.prev_num) }}">Previous</a></li>
-        {% endif %}
-        {% if pagination.has_next %}
-        <li><a href="{{ url_for('reports.report_list', page=pagination.next_num) }}">Next</a></li>
-        {% endif %}
-    </ul>
+<div class="container mx-auto mt-6">
+    <div class="p-4 mb-4">
+        <h1 class="text-2xl font-semibold text-gray-800">Açık Ekspertiz Raporları</h1>
+    </div>
+    <div class="overflow-x-auto">
+        <table class="min-w-full bg-white border border-gray-300">
+            <thead class="bg-gray-200">
+            <tr>
+                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Ekspertiz Tarihi</th>
+                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Araç Plaka</th>
+                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Şasi no</th>
+                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Marka</th>
+                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Model</th>
+                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Model Yılı</th>
+                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Müşteri</th>
+                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">Ekspertiz Paketi</th>
+                <th class="px-4 py-2 text-left text-sm font-medium text-gray-700">İşlem</th>
+            </tr>
+            </thead>
+            <tbody>
+            {% for report in reports %}
+            <tr class="{{ 'bg-white' if loop.index is odd else 'bg-gray-100' }} border-b">
+                <td class="px-4 py-3 text-sm text-gray-700">{{ report.inspection_date.strftime('%d.%m.%Y %H:%M:%S') }}</td>
+                <td class="px-4 py-3 text-sm text-gray-700">{{ report.vehicle.plate }}</td>
+                <td class="px-4 py-3 text-sm text-gray-700">{{ report.vehicle.chassis_number }}</td>
+                <td class="px-4 py-3 text-sm text-gray-700">{{ report.vehicle.brand }}</td>
+                <td class="px-4 py-3 text-sm text-gray-700">{{ report.vehicle.model }}</td>
+                <td class="px-4 py-3 text-sm text-gray-700">{{ report.vehicle.model_year }}</td>
+                <td class="px-4 py-3 text-sm text-gray-700">{{ report.customer.full_name }}</td>
+                <td class="px-4 py-3 text-sm text-gray-700">{{ report.package.name }}</td>
+                <td class="px-4 py-3 text-sm">
+                    <button class="bg-orange-500 hover:bg-orange-600 text-white text-sm px-3 py-1 rounded inline-flex items-center mr-2">
+                        <i class="fas fa-car mr-1"></i> Raporu Tamamlayın
+                    </button>
+                    <button class="bg-red-500 hover:bg-red-600 text-white text-sm px-3 py-1 rounded">İptal İşlemleri</button>
+                </td>
+            </tr>
+            {% endfor %}
+            </tbody>
+        </table>
+
+        <!-- Pagination -->
+        <div class="flex justify-between items-center mt-4">
+            <div></div>
+            <div class="flex items-center space-x-2">
+                {% if pagination.has_prev %}
+                <a href="{{ url_for('reports.report_list', page=pagination.prev_num) }}" class="bg-gray-200 text-gray-600 hover:bg-gray-300 px-3 py-1 text-sm rounded">Geri</a>
+                {% endif %}
+                {% for page_num in pagination.iter_pages() %}
+                {% if page_num %}
+                <a href="{{ url_for('reports.report_list', page=page_num) }}" class="bg-blue-500 text-white px-3 py-1 text-sm rounded">{{ page_num }}</a>
+                {% endif %}
+                {% endfor %}
+                {% if pagination.has_next %}
+                <a href="{{ url_for('reports.report_list', page=pagination.next_num) }}" class="bg-gray-200 text-gray-600 hover:bg-gray-300 px-3 py-1 text-sm rounded">İleri</a>
+                {% endif %}
+            </div>
+            <div></div>
+
+        </div>
+    </div>
 </div>
-{% endblock %}
+    <script src="../../static/js/appointment.js"></script>
+
+</body>
+</html>

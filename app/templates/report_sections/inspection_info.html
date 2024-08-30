@@ -3,8 +3,8 @@
     <!-- Created By Staff -->
     <div>
         <label class="block text-sm font-medium text-gray-700">Oluşturan Personel</label>
-        <input type="text" name="created_by" id="created_by" required
-               value="{{ form.created_by.data | skip_none }}"
+        <input type="number" name="created_by" id="created_by" required
+               value="{{ form.created_by.data | default('') }}"
                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                oninvalid="this.setCustomValidity('Lütfen oluşturan personel adını girin')"
                oninput="setCustomValidity('')">
@@ -17,7 +17,7 @@
     <div>
         <label class="block text-sm font-medium text-gray-700">Ekspertiz Tarihi</label>
         <input type="datetime-local" name="inspection_date" id="inspection_date" required
-               value="{{ form.created_at.data.strftime('%Y-%m-%dT%H:%M') if form.created_at.data else '' }}"
+               value="{{ form.inspection_date.data.strftime('%Y-%m-%dT%H:%M') if form.inspection_date.data else '' }}"
                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                oninvalid="this.setCustomValidity('Lütfen ekspertiz tarihini girin')"
                oninput="setCustomValidity('')">
@@ -55,7 +55,7 @@
             <input type="text" name="package_price" id="package_price" required
                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
                    oninvalid="this.setCustomValidity('Lütfen paket fiyatını girin')"
-                   oninput="setCustomValidity('')">
+                   oninput="setCustomValidity(''); calculateVAT();">
         </div>
 
         <!-- Package Price (Including VAT) -->
@@ -63,9 +63,23 @@
             <label class="block text-sm font-medium text-gray-700">Paket Fiyatı (KDV Dahil)</label>
             <input type="text" name="package_price_vat" id="package_price_vat" required
                    class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                   oninvalid="this.setCustomValidity('Lütfen KDV dahil paket fiyatını girin')"
-                   oninput="setCustomValidity('')">
+                   readonly>
         </div>
     </div>
 
 </div>
+
+<script>
+    function calculateVAT() {
+        const packagePriceInput = document.getElementById('package_price');
+        const packagePriceVatInput = document.getElementById('package_price_vat');
+
+        let packagePrice = parseFloat(packagePriceInput.value);
+
+        if (!isNaN(packagePrice)) {
+            packagePriceVatInput.value = (packagePrice * 118 / 100).toFixed(2);
+        } else {
+            packagePriceVatInput.value = '';
+        }
+    }
+</script>

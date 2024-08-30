@@ -32,7 +32,6 @@
                 <th class="py-2 px-4 border-b text-left text-gray-600">Müşteri Adı ve Soyadı</th>
                 <th class="py-2 px-4 border-b text-left text-gray-600">Telefon Numarası</th>
                 <th class="py-2 px-4 border-b text-left text-gray-600">Araç Modeli</th>
-                <th class="py-2 px-4 border-b text-left text-gray-600">Randevu Kaynağı</th>
                 <th class="py-2 px-4 border-b text-left text-gray-600">Randevu Durumu</th>
                 <th class="py-2 px-4 border-b text-left text-gray-600">İşlem</th>
             </tr>
@@ -44,7 +43,6 @@
                 <td class="py-2 px-4 border-b">{{ appointment.customer.full_name }}</td>
                 <td class="py-2 px-4 border-b">{{ appointment.customer.phone_number }}</td>
                 <td class="py-2 px-4 border-b">{{ appointment.brand }} {{ appointment.model }}</td>
-                <td class="py-2 px-4 border-b">- </td> <!-- Assuming 'Online' is the source -->
                 <td class="py-2 px-4 border-b">
                     {% if appointment.reminder_sent %}
                     Gönderildi

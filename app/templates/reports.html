@@ -11,7 +11,7 @@
 
 <body class="bg-gray-100 text-gray-800">
 {% include 'navbar.html' %}
-
+<div id="createAppointmentModal"></div>
 
 <!-- Main Content -->
 <main class="container mx-auto px-4 py-6">
@@ -48,13 +48,15 @@
             </div>
 
             <!-- Submit and Cancel Buttons -->
-            <div class="p-1 ">
+            <div class="p-1">
                 {% include 'report_sections/submit_buttons.html' %}
             </div>
         </form>
     </div>
 </main>
 <script src="../static/js/report.js"></script>
+<script src="../static/js/appointment.js"></script>
+
 </body>
 
 </html>

@@ -1,8 +1,11 @@
+<script src="https://cdn.tailwindcss.com"></script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css">
 <!-- navbar.html -->
 <div class="bg-blue-500 p-4">
     <div class="container mx-auto flex justify-between items-center">
         <div class="text-white text-lg font-bold">
-            <i class="fas fa-th-large"></i> BAŞLANGIÇ
+            <i class="fas fa-th-large">            <a href="hom"> </a>
+            </i>
         </div>
         <div class="flex space-x-8 text-white">
             <!-- Ekspertiz Dropdown -->
@@ -12,7 +15,7 @@
                 <!-- Dropdown Menu -->
                 <div class="dropdown-menu">
                     <a href="{{ url_for('reports.add_report') }}">Yeni Rapor Oluştur</a>
-                    <a href="#">Açık Ekspertiz Raporları</a>
+                    <a href="{{ url_for('reports.report_list') }}">Açık Ekspertiz Raporları</a>
                     <a href="#">Tamamlanmış Ekspertiz Raporları</a>
                     <a href="#">İptal Edilen Ekspertiz Raporları</a>
                 </div>
@@ -44,7 +47,7 @@
                 <a href="#" class="hover:underline uppercase">Ayarlar</a>
                 <div class="dropdown-menu">
                     <a href="{{ url_for('companies.company_detail') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Firma Ayarları</a>
-                    <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Ekspertiz Paketleri</a>
+                    <a href="{{ url_for('packages.packages_list') }}" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Ekspertiz Paketleri</a>
                     <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Müşteriler</a>
                     <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Bayilik Ayarları</a>
                     <a href="#" class="block px-4 py-2 text-gray-800 hover:bg-gray-100">Bayilik Paketleri</a>

@@ -3,59 +3,43 @@
     <div>
         <label class="block text-sm font-medium text-gray-700">Plaka</label>
         <input type="text" name="vehicle_plate" id="vehicle_plate"
-               value="{{ form.vehicle_plate.data | skip_none }}"
+               value="{{ vehicle_info.plate if vehicle_info else '' }}"
                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-               required
-               pattern=".{7,8}"
-               oninvalid="this.setCustomValidity('Plaka 7 veya 8 karakter uzunluğunda olmalıdır')"
-               oninput="setCustomValidity('')">
-        {% if form.vehicle_plate.errors %}
-        <span class="text-red-500 text-sm">{{ form.vehicle_plate.errors[0] }}</span>
-        {% endif %}
+               required>
     </div>
 
     <!-- Brand -->
     <div>
         <label class="block text-sm font-medium text-gray-700">Marka</label>
-        <input type="text" name="brand" id="brand" required
-               value="{{ form.brand.data | skip_none }}"
+        <input type="text" name="brand" id="brand"
+               value="{{ vehicle_info.brand if vehicle_info else '' }}"
                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-               oninvalid="this.setCustomValidity('Lütfen marka girin')"
-               oninput="setCustomValidity('')">
-        {% if form.brand.errors %}
-        <span class="text-red-500 text-sm">{{ form.brand.errors[0] }}</span>
-        {% endif %}
+               required>
     </div>
 
     <!-- Model -->
     <div>
         <label class="block text-sm font-medium text-gray-700">Model</label>
-        <input type="text" name="model" id="model" required
-               value="{{ form.model.data | skip_none }}"
+        <input type="text" name="model" id="model"
+               value="{{ vehicle_info.model if vehicle_info else '' }}"
                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-               oninvalid="this.setCustomValidity('Lütfen model girin')"
-               oninput="setCustomValidity('')">
-        {% if form.model.errors %}
-        <span class="text-red-500 text-sm">{{ form.model.errors[0] }}</span>
-        {% endif %}
+               required>
     </div>
+
 
     <!-- Model Year -->
     <div>
         <label class="block text-sm font-medium text-gray-700">Model Yılı</label>
         <select name="model_year" id="model_year"
                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                required
-                oninvalid="this.setCustomValidity('Lütfen model yılını seçin')"
-                oninput="setCustomValidity('')">
+                required>
             <option value="">--Seçiniz--</option>
-            {% for year in model_years %}
-            <option value="{{ year | skip_none }}" {% if form.model_year.data == year %}selected{% endif %}>{{ year }}</option>
+            {% for year in range(current_year, 1970, -1) %}
+            <option value="{{ year }}" {% if vehicle_info and vehicle_info.model_year == year %}selected{% endif %}>
+                {{ year }}
+            </option>
             {% endfor %}
         </select>
-        {% if form.model_year.errors %}
-        <span class="text-red-500 text-sm">{{ form.model_year.errors[0] }}</span>
-        {% endif %}
     </div>
 
     <!-- Gear Type -->
@@ -63,45 +47,31 @@
         <label class="block text-sm font-medium text-gray-700">Vites Türü</label>
         <select name="gear_type" id="gear_type"
                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                required
-                oninvalid="this.setCustomValidity('Lütfen vites türünü seçin')"
-                oninput="setCustomValidity('')">
+                required>
             <option value="">--Seçiniz--</option>
-            {% for gear in gears %}
-            <option value="{{ gear.id | skip_none }}" {% if form.gear_type.data == gear.id %}selected{% endif %}>{{ gear.name }}</option>
+            {% for gear_name, gear_value in transmission_types %}
+            <option value="{{ gear_name }}" {% if vehicle_info and vehicle_info.transmission_type == gear_name %}selected{% endif %}>
+                {{ gear_value }}
+            </option>
             {% endfor %}
         </select>
-        {% if form.gear_type.errors %}
-        <span class="text-red-500 text-sm">{{ form.gear_type.errors[0] }}</span>
-        {% endif %}
     </div>
 
     <!-- Engine Number -->
     <div>
         <label class="block text-sm font-medium text-gray-700">Motor No</label>
         <input type="text" name="engine_number" id="engine_number"
-               value="{{ form.engine_number.data | skip_none }}"
-               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-               oninvalid="this.setCustomValidity('Lütfen motor numarasını girin')"
-               oninput="setCustomValidity('')">
-        {% if form.engine_number.errors %}
-        <span class="text-red-500 text-sm">{{ form.engine_number.errors[0] }}</span>
-        {% endif %}
+               value="{{ vehicle_info.engine_number if vehicle_info else '' }}"
+               class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
     </div>
 
     <!-- Chassis Number -->
     <div>
         <label class="block text-sm font-medium text-gray-700">Şasi No</label>
         <input type="text" name="chassis_number" id="chassis_number"
-               value="{{ form.chassis_number.data | skip_none }}"
+               value="{{ vehicle_info.chassis_number if vehicle_info else '' }}"
                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-               required
-               pattern=".{17,17}"
-               oninvalid="this.setCustomValidity('Şasi numarası 17 karakter uzunluğunda olmalıdır')"
-               oninput="setCustomValidity('')">
-        {% if form.chassis_number.errors %}
-        <span class="text-red-500 text-sm">{{ form.chassis_number.errors[0] }}</span>
-        {% endif %}
+               required>
     </div>
 
     <!-- Vehicle Color -->
@@ -109,17 +79,14 @@
         <label class="block text-sm font-medium text-gray-700">Araç Rengi</label>
         <select name="color" id="color"
                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                required
-                oninvalid="this.setCustomValidity('Lütfen araç rengini seçin')"
-                oninput="setCustomValidity('')">
+                required>
             <option value="">--Seçiniz--</option>
-            {% for color in colors %}
-            <option value="{{ color }}" {% if form.color.data == color %}selected{% endif %}>{{ color }}</option>
+            {% for color_name, color_value in colors %}
+            <option value="{{ color_name }}" {% if vehicle_info and vehicle_info.color == color_name %}selected{% endif %}>
+                {{ color_value }}
+            </option>
             {% endfor %}
         </select>
-        {% if form.color.errors %}
-        <span class="text-red-500 text-sm">{{ form.color.errors[0] }}</span>
-        {% endif %}
     </div>
 
     <!-- Fuel Type -->
@@ -127,32 +94,23 @@
         <label class="block text-sm font-medium text-gray-700">Yakıt Türü</label>
         <select name="fuel_type" id="fuel_type"
                 class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-                required
-                oninvalid="this.setCustomValidity('Lütfen yakıt türünü seçin')"
-                oninput="setCustomValidity('')">
+                required>
             <option value="">--Seçiniz--</option>
-            <option value="GASOLINE" {% if form.fuel_type.data == 'GASOLINE' %}selected{% endif %}>Benzin</option>
-            <option value="LPG" {% if form.fuel_type.data == 'LPG' %}selected{% endif %}>Benzin + LPG</option>
-            <option value="DIESEL" {% if form.fuel_type.data == 'DIESEL' %}selected{% endif %}>Dizel</option>
-            <option value="ELECTRIC" {% if form.fuel_type.data == 'ELECTRIC' %}selected{% endif %}>Elektrikli</option>
-            <option value="HYBRID" {% if form.fuel_type.data == 'HYBRID' %}selected{% endif %}>Hibrit</option>
+            {% for fuel_name, fuel_value in fuel_types %}
+            <option value="{{ fuel_name }}" {% if vehicle_info and vehicle_info.fuel_type == fuel_name %}selected{% endif %}>
+                {{ fuel_value }}
+            </option>
+            {% endfor %}
         </select>
-        {% if form.fuel_type.errors %}
-        <span class="text-red-500 text-sm">{{ form.fuel_type.errors[0] }}</span>
-        {% endif %}
     </div>
 
     <!-- Vehicle KM/Mileage -->
     <div>
         <label class="block text-sm font-medium text-gray-700">Araç KM / Mil</label>
         <input type="text" name="vehicle_km" id="vehicle_km"
-               value="{{ form.vehicle_km.data | skip_none }}"
+               value="{{ vehicle_info.mileage if vehicle_info else '' }}"
                class="mt-1 block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm"
-               required
-               oninvalid="this.setCustomValidity('Lütfen araç kilometre/mil girin')"
-               oninput="setCustomValidity('')">
-        {% if form.vehicle_km.errors %}
-        <span class="text-red-500 text-sm">{{ form.vehicle_km.errors[0] }}</span>
-        {% endif %}
+               required>
     </div>
 </div>
+
