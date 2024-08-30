@@ -1,8 +1,6 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, BooleanField, SelectField, DateField, SubmitField, TextAreaField, \
-    DateTimeField
+from wtforms import StringField, IntegerField, BooleanField, SelectField, DateField, SubmitField, TextAreaField, DateTimeField
 from wtforms.validators import DataRequired, Optional, Length
-
 
 class ReportForm(FlaskForm):
     # Customer Information
@@ -19,20 +17,20 @@ class ReportForm(FlaskForm):
     owner_address = TextAreaField('Owner Address', validators=[Optional(), Length(max=255)])
 
     # Vehicle Information
-    vehicle_plate = StringField('Vehicle Plate', validators=[DataRequired(), Length(min=1, max=10)])
-    engine_number = StringField('Engine Number', validators=[Optional(), Length(min=1, max=17)])
-    brand = StringField('Brand', validators=[DataRequired(), Length(min=1, max=50)])
-    model = StringField('Model', validators=[DataRequired(), Length(min=1, max=50)])
-    chassis_number = StringField('Chassis Number', validators=[DataRequired(), Length(min=1, max=17)])
-    color = StringField('Color', validators=[DataRequired(), Length(min=1, max=50)])
+    vehicle_plate = StringField('Vehicle Plate', validators=[DataRequired(), Length(max=10)])
+    brand = StringField('Brand', validators=[DataRequired(), Length(max=50)])
+    model = StringField('Model', validators=[DataRequired(), Length(max=50)])
+    chassis_number = StringField('Chassis Number', validators=[DataRequired(), Length(max=17)])
+    color = SelectField('Color', choices=[], validators=[DataRequired()])
     model_year = IntegerField('Model Year', validators=[DataRequired()])
-    gear_type = StringField('Gear Type', validators=[DataRequired()])
-    fuel_type = StringField('Fuel Type', validators=[DataRequired()])
-    vehicle_km = IntegerField('Vehicle KM', validators=[DataRequired()])
+    gear_type = SelectField('Gear Type', choices=[], validators=[DataRequired()])
+    fuel_type = SelectField('Fuel Type', choices=[], validators=[DataRequired()])
+    vehicle_km = IntegerField('Vehicle KM/Mileage', validators=[DataRequired()])
+    engine_number = StringField('Engine Number', validators=[Optional(), Length(max=30)])
 
     # Inspection Information
     created_at = DateTimeField('Created At', validators=[DataRequired()], format='%Y-%m-%dT%H:%M')
-    inspection_date = DateField('Inspection Date', validators=[Optional()], format='%Y-%m-%d')
+    inspection_date = DateTimeField('Inspection Date', validators=[Optional()], format='%Y-%m-%dT%H:%M')
     package_id = SelectField('Package ID', coerce=int, validators=[DataRequired()], choices=[])
     created_by = IntegerField('Created By', validators=[DataRequired()])
     registration_document_seen = BooleanField('Registration Document Seen')
@@ -41,5 +39,5 @@ class ReportForm(FlaskForm):
     # Agent Information
     agent_name = StringField('Agent Name', validators=[Optional(), Length(min=2, max=100)])
 
-    # Additional fields for pricing
+    # Submit button
     submit = SubmitField('Create Report')
