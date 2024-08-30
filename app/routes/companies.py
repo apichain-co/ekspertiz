@@ -31,7 +31,7 @@ def add_company():
             address=address,
             my_business_address_link=my_business_address_link
         )
-        db.session.add_package(new_company)
+        db.session.add(new_company)
         db.session.commit()
         flash('New company successfully created!')
         return redirect(url_for('companies.company_detail'))
@@ -54,7 +54,7 @@ def update_company():
             address="123 Default Street, Default City, DC 12345",
             my_business_address_link="https://maps.google.com/?q=default+address"
         )
-        db.session.add_package(company)
+        db.session.add(company)
         db.session.commit()
         flash('Default company created. Please update the details.')
 

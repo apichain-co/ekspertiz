@@ -40,7 +40,7 @@ def add_vehicle():
             mileage=mileage,
             report_id=report_id
         )
-        db.session.add_package(new_vehicle)
+        db.session.add(new_vehicle)
         db.session.commit()
         flash('New vehicle successfully created!')
         return redirect(url_for('vehicles.vehicle_list'))

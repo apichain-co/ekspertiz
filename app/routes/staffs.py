@@ -25,7 +25,7 @@ def add_staff():
             phone_number=phone_number,
             department=department
         )
-        db.session.add_package(new_staff)
+        db.session.add(new_staff)
         db.session.commit()
         flash('New staff member successfully added!')
         return redirect(url_for('staff.staff_list'))

@@ -19,7 +19,7 @@ def add_agent():
         report_id = request.form['report_id']
 
         new_agent = Agent(full_name=full_name, report_id=report_id)
-        db.session.add_package(new_agent)
+        db.session.add(new_agent)
         db.session.commit()
         flash('New agent successfully created!')
         return redirect(url_for('agents.agent_list'))
