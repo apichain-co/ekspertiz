@@ -3,9 +3,7 @@ from sqlalchemy.orm import validates
 from ..database import db
 from app.enums import TransmissionType, FuelType, Color
 
-
 class Vehicle(db.Model):
-    # TODO: ask which ones are really nullable
     id = db.Column(db.Integer, primary_key=True)
     plate = db.Column(db.String(10), nullable=False)
     engine_number = db.Column(db.String(17), nullable=True)
@@ -17,6 +15,9 @@ class Vehicle(db.Model):
     transmission_type = db.Column(db.Enum(TransmissionType), nullable=False)
     fuel_type = db.Column(db.Enum(FuelType), nullable=False)
     mileage = db.Column(db.Integer, nullable=False)
+
+    # Relationship with Report
+    reports = db.relationship('Report', back_populates='vehicle')
 
     @validates('model_year')
     def validate_model_year(self, key, value):
