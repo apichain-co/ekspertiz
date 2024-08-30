@@ -1,7 +1,6 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
 from app.database import db
-from app.models.package import Package
-from app.models.expertise import ExpertiseType, PackageExpertise
+from app.models import Report, ExpertiseType, PackageExpertise, Package
 from app.forms import PackageForm
 from app.services.package_service import get_expertises
 
@@ -16,7 +15,7 @@ def packages_list():
     return render_template('packages.html', form=form, packages=packs, get_expertises=get_expertises, expertises=expertises)
 
 @packages.route('/add', methods=['GET', 'POST'])
-def add_package():
+def add_pckg():
     expertises = ExpertiseType.query.all()  # to show all as a choice
     expertise_choices = [(str(expertise.id), expertise.name) for expertise in expertises]
 
@@ -53,8 +52,8 @@ def add_package():
     else:
         print(form.errors)
         flash('Formu doğru doldurduğunuza emin olun!', 'error')
+        return redirect(url_for('packages.packages_list'))
 
-    return render_template('packages.html', form=form, expertises=expertises)
 
 @packages.route('/update/<int:package_id>', methods=['GET', 'POST'])
 def update_package(package_id):
@@ -107,6 +106,13 @@ def update_package(package_id):
 @packages.route('/delete/<int:package_id>', methods=['POST'])
 def delete_package(package_id):
     package = Package.query.get_or_404(package_id)
+
+    # Check if any reports are associated with this package
+    associated_reports = Report.query.filter_by(package_id=package_id).all()
+
+    if associated_reports:
+        flash('Bu paket birden fazla raporda kullanıldığı için silinemez!', 'danger')
+        return redirect(url_for('packages.packages_list'))
 
     db.session.delete(package)
     db.session.commit()

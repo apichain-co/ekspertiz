@@ -1,84 +1,72 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash
-from ..database import db
-from ..models import Company
+from ..forms import CompanyForm
+from ..services.company_service import *
 
 companies = Blueprint('companies', __name__)
 
 @companies.route('/company')
 def company_detail():
-    company = Company.query.first()
-    return render_template('settings/settings.html', company=company)
+    company = get_first_company()
+    form = CompanyForm(obj=company)
+    return render_template('settings/settings.html', company=company, form=form)
+
 
 @companies.route('/company/add', methods=['GET', 'POST'])
 def add_company():
-    if request.method == 'POST':
-        name = request.form['name']
-        phone_1 = request.form.get('phone_1')
-        phone_2 = request.form.get('phone_2')
-        fax = request.form.get('fax')
-        email = request.form.get('email')
-        website = request.form.get('website')
-        address = request.form.get('address')
-        my_business_address_link = request.form.get('my_business_address_link')
+    form = CompanyForm()
 
-        new_company = Company(
-            name=name,
-            phone_1=phone_1,
-            phone_2=phone_2,
-            fax=fax,
-            email=email,
-            website=website,
-            address=address,
-            my_business_address_link=my_business_address_link
-        )
-        db.session.add(new_company)
-        db.session.commit()
-        flash('New company successfully created!')
+    if form.validate_on_submit():
+        data = {
+            'name': form.name.data,
+            'phone_1': form.phone_1.data,
+            'phone_2': form.phone_2.data,
+            'fax': form.fax.data,
+            'email': form.email.data,
+            'website': form.website.data,
+            'address': form.address.data,
+            'my_business_address_link': form.my_business_address_link.data,
+        }
+        create_company(data)
+        flash('New company successfully created!', 'success')
         return redirect(url_for('companies.company_detail'))
 
-    return render_template('settings/add_company.html')
+    return render_template('settings/add_company.html', form=form)
+
 
 @companies.route('/company/update', methods=['GET', 'POST'])
 def update_company():
-    company = Company.query.first()
+    company = get_first_company()
 
     if not company:
-        # Provide default values if no company exists
-        company = Company(
-            name="Firma Adı",
-            phone_1="000-000-0000",
-            phone_2="000-000-0000",
-            fax="000-000-0000",
-            email="default@company.com",
-            website="https://www.defaultcompany.com",
-            address="123 Default Street, Default City, DC 12345",
-            my_business_address_link="https://maps.google.com/?q=default+address"
-        )
-        db.session.add(company)
-        db.session.commit()
-        flash('Default company created. Please update the details.')
+        company = create_default_company()
+        flash('Default company created. Please update the details.', 'warning')
 
-    if request.method == 'POST':
-        company.name = request.form['name']
-        company.phone_1 = request.form.get('phone_1')
-        company.phone_2 = request.form.get('phone_2')
-        company.fax = request.form.get('fax')
-        company.email = request.form.get('email')
-        company.website = request.form.get('website')
-        company.address = request.form.get('address')
-        company.my_business_address_link = request.form.get('my_business_address_link')
+    form = CompanyForm(obj=company)
 
-        db.session.commit()
-        flash('Company successfully updated!')
+    if form.validate_on_submit():
+        data = {
+            'name': form.name.data,
+            'phone_1': form.phone_1.data,
+            'phone_2': form.phone_2.data,
+            'fax': form.fax.data,
+            'email': form.email.data,
+            'website': form.website.data,
+            'address': form.address.data,
+            'my_business_address_link': form.my_business_address_link.data,
+        }
+        update_company_service(company, data)
+        flash('Company successfully updated!', 'success')
         return redirect(url_for('companies.company_detail'))
 
-    return render_template('settings/settings.html', company=company)
+    return render_template('settings/settings.html', form=form, company=company)
 
 
 @companies.route('/company/delete', methods=['POST'])
 def delete_company():
-    company = Company.query.first()
-    db.session.delete(company)
-    db.session.commit()
-    flash('Company successfully deleted!')
+    company = get_first_company()
+    if company:
+        delete_company(company)
+        flash('Company successfully deleted!', 'success')
+    else:
+        flash('No company found to delete.', 'danger')
     return redirect(url_for('companies.company_detail'))
