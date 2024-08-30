@@ -42,6 +42,9 @@ def delete_company(company):
 
 
 def create_default_company():
+    first_company = get_first_company() # if there is no instance, returns None
+    if first_company:
+        return first_company
     default_company = Company(
         name="Firma Adı",
         phone_1="000-000-0000",
