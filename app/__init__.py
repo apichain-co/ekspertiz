@@ -10,6 +10,7 @@ from logging.handlers import RotatingFileHandler
 from .services.commands import register_commands
 from .services.expertise_initializer import ExpertiseInitializer
 from .tests.test_config import TestConfig
+from .services.company_service import create_default_company
 
 # Import blueprints
 from .routes.appointments import appointments as appointments_bp
@@ -46,6 +47,7 @@ def create_app(config_object=None):
         db.create_all()
         db.session.commit()
         ExpertiseInitializer.initialize_expertise_reports()  # Initialize expertise reports
+        create_default_company()
 
     register_commands(app)
 
