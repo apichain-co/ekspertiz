@@ -5,7 +5,7 @@ from ..models import Report, Customer, Package, Staff, Vehicle
 from datetime import datetime
 from ..services.enum_service import COLOR_MAPPING, TRANSMISSION_TYPE_MAPPING, FUEL_TYPE_MAPPING, map_to_enum
 from ..services.report_service import (get_or_create_customer, create_report, get_or_create_vehicle_owner,
-                                       get_or_create_agent, get_or_create_vehicle)
+                                       get_or_create_agent, get_or_create_vehicle, get_or_create_staff_by_name)
 from sqlalchemy.exc import IntegrityError
 from ..forms.report_form import ReportForm
 
@@ -37,6 +37,8 @@ def add_report():
     form.color.choices = colors
     form.gear_type.choices = transmission_types
     form.fuel_type.choices = fuel_types
+
+    form.created_by.choices = [(staff.id, staff.full_name) for staff in Staff.query.all()]
 
     packages = Package.query.all()
     current_year = datetime.now().year
@@ -100,6 +102,10 @@ def add_report():
             agent = None
             if form.agent_name.data:
                 agent = get_or_create_agent(form.agent_name.data)
+
+            # Get or create the staff with name
+            staff = get_or_create_staff_by_name(form.created_by)
+
             # Create a new Report with the generated vehicle details
             new_report = create_report(
                 inspection_date=form.inspection_date.data,
@@ -107,7 +113,7 @@ def add_report():
                 customer_id=customer.id,
                 package_id=form.package_id.data,
                 operation=form.operation.data,
-                created_by=form.created_by.data,
+                created_by=staff.id,
                 registration_document_seen=form.registration_document_seen.data
             )
             # Optionally link VehicleOwner to the report if it was created
@@ -151,8 +157,6 @@ def add_report():
         packages=packages,
         current_year=current_year
     )
-
-
 
 
 @reports.route('/report/update/<int:report_id>', methods=['GET', 'POST'])
