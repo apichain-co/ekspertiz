@@ -36,6 +36,12 @@ class Color(Enum):
     GREEN = "Yeşil"
 
 
+class ReportStatus(Enum):
+    OPENED = "Açılmış"
+    COMPLETED = "Tamamlanmış"
+    CANCELLED = "İptal edilmiş"
+
+
 class ExpertiseAnswer:
 
     class BasicControl(Enum):
