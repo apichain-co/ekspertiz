@@ -1,5 +1,6 @@
 import json
-from ..models import Report, Customer, VehicleOwner, Vehicle, Agent, PackageExpertise,  ExpertiseReport, ExpertiseType, ExpertiseFeature
+from ..models import (Report, Customer, VehicleOwner, Vehicle, Agent,
+                      Staff, PackageExpertise,  ExpertiseReport, ExpertiseType, ExpertiseFeature)
 from ..database import db
 from datetime import datetime
 
@@ -117,6 +118,15 @@ def get_or_create_agent(agent_name):
         db.session.add(agent)
         db.session.commit()
     return agent
+
+
+def get_or_create_staff_by_name(staff_name):
+    staff = Staff.query.filter_by(full_name=staff_name).first()
+    if not staff:
+        staff = Staff(full_name=staff_name)
+        db.session.add(staff)
+        db.session.commit()
+    return staff
 
 
 def get_or_create_vehicle(form_data):
