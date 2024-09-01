@@ -1,5 +1,6 @@
 <!-- Content for Yetkili Bilgileri -->
 <form action="{{ url_for('companies.update_company') }}" method="POST" class="space-y-4">
+    {{ form.hidden_tag() }}
 
     <div class="grid grid-cols-1 gap-6 mt-4">
         <div>

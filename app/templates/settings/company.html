@@ -3,6 +3,7 @@
     <div class="bg-white p-6 rounded-lg shadow">
 
         <form action="{{ url_for('companies.update_company', company_id=company.id) }}" method="POST" class="space-y-4">
+            {{ form.hidden_tag() }}
 
             <div>
                 <div class="border-b border-gray-200 pb-4">
