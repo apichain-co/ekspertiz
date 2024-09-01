@@ -34,10 +34,9 @@ class ReportForm(FlaskForm):
     created_at = DateTimeField('Created At', validators=[DataRequired()], format='%Y-%m-%dT%H:%M')
     inspection_date = DateTimeField('Inspection Date', validators=[Optional()], format='%Y-%m-%dT%H:%M')
     package_id = SelectField('Package ID', coerce=int, validators=[DataRequired()], choices=[])
-    created_by = IntegerField('Created By', validators=[DataRequired()])
+    created_by = SelectField('Created By', coerce=int, validators=[DataRequired()], choices=[])
     registration_document_seen = BooleanField('Registration Document Seen')
     operation = StringField('Operation', validators=[Optional(), Length(max=255)])
-    status = SelectField('Status', choices=[(status, status.value) for status in ReportStatus])
 
     # Agent Information
     agent_name = StringField('Agent Name', validators=[Optional(), Length(min=2, max=100)])
