@@ -2,6 +2,9 @@ alembic==1.13.2
 Flask==3.0.3
 Flask_Migrate==3.0.0
 flask_sqlalchemy==3.1.1
-pytest==8.3.2
+flask_wtf==1.2.1
 python-dotenv==1.0.1
 SQLAlchemy==2.0.31
+Werkzeug==3.0.4
+WTForms==3.1.2
+email-validator==2.2.0
