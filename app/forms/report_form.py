@@ -1,6 +1,8 @@
 from flask_wtf import FlaskForm
-from wtforms import StringField, IntegerField, BooleanField, SelectField, DateField, SubmitField, TextAreaField, DateTimeField
+from wtforms import StringField, IntegerField, BooleanField, SelectField, SubmitField, TextAreaField, DateTimeField
 from wtforms.validators import DataRequired, Optional, Length
+from ..enums import ReportStatus
+
 
 class ReportForm(FlaskForm):
     # Customer Information
@@ -35,6 +37,7 @@ class ReportForm(FlaskForm):
     created_by = IntegerField('Created By', validators=[DataRequired()])
     registration_document_seen = BooleanField('Registration Document Seen')
     operation = StringField('Operation', validators=[Optional(), Length(max=255)])
+    status = SelectField('Status', choices=[(status, status.value) for status in ReportStatus])
 
     # Agent Information
     agent_name = StringField('Agent Name', validators=[Optional(), Length(min=2, max=100)])

@@ -1,5 +1,6 @@
 from datetime import datetime
 from ..database import db
+from ..enums import ReportStatus
 
 
 class Report(db.Model):
@@ -13,6 +14,7 @@ class Report(db.Model):
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     created_by = db.Column(db.Integer, db.ForeignKey('staff.id'), nullable=False)
     registration_document_seen = db.Column(db.Boolean, nullable=False)
+    status = db.Column(db.Enum(ReportStatus), default=ReportStatus.OPENED, nullable=False)
 
     customer = db.relationship('Customer', back_populates='reports', overlaps="customer_reports,customer")
     package = db.relationship('Package', back_populates='reports')
