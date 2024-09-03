@@ -42,8 +42,54 @@ class ReportStatus(Enum):
     CANCELLED = "İptal edilmiş"
 
 
-class ExpertiseAnswer:
+class ExpertiseTypeEnum(Enum):
+    BOYA = "Boya Ekspertiz"
+    KAPORTA = "Kaporta Ekspertiz"
+    MOTOR = "Motor Ekspertiz"
+    YANAL_KAYMA = "Yanal Kayma Ekspertiz"
+    SUSPANSIYON = "Süspansiyon Ekspertiz"
+    FRENI = "Fren Ekspertiz"
+    YOL = "Yol Ekspertiz"
+    DYNO = "Dyno Ekspertiz"
+    BEYIN = "Beyin Ekspertiz"
+    IC = "İç Ekspertiz"
+    DIS = "Dış Ekspertiz"
+    MEKANIK = "Mekanik Ekspertiz"
 
-    class BasicControl(Enum):
-        pass
+
+class ExpertiseAnswer:
+    class IntStatus(Enum):
+        ZERO = 0
+
+    class ExpertiseStatus(Enum):
+        NO_ISSUE = "YOK"
+        PASSED = "Kontrolden Geçti"
+        MAY_CAUSE_ISSUES = "Sorun Çıkarabilir"
+        NEEDS_MAINTENANCE = "Bakım Gerekli"
+
+    class PaintStatus(Enum):
+        ORIGINAL = "ORİJİNAL"
+        PLASTIC = "PLASTİK"
+        PAINTED = "BOYALI"
+        LOCALLY_PAINTED = "LOKAL BOYALI"
+        REPLACED = "DEĞİŞMİŞ"
+        COATED = "KAPLAMA"
+        NONE = "YOK"
+
+    class ExtraConditions(Enum):
+        REMOVED_REPLACED = "SÖKÜLMÜŞ / TAKILMIŞ"
+        DENTLESS = "BOYASIZ GÖÇÜK"
+        DENTED_SCRATCHED = "EZİK-ÇİZİK"
+        VARNISH = "VERNİK"
+
+    class BodyworkStatus(Enum):
+        NO_ISSUE = "SORUNSUZ"
+        SCRATCHED = "ÇİZİK"
+        DENTED = "EZİK / KIRIK / GÖÇÜK"
+        PAINTED = "İŞLEMLİ / BOYALI"
+
+    class OBDStatus(Enum):
+        NO_ERROR = "ARIZA KAYDI YOK"
+        ERROR_LOGGED = "HATA KAYDI VAR"
+        NO_CONNECTION = "BAĞLANTI KURULAMADI"
 
