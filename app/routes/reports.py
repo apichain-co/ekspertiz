@@ -1,7 +1,7 @@
 from flask import Blueprint, render_template, request, redirect, url_for, flash, jsonify
 from ..database import db
-from ..enums import FuelType, TransmissionType, Color
-from ..models import Report, Customer, Package, Staff, Vehicle
+from ..enums import FuelType, TransmissionType, Color, ReportStatus
+from ..models import Report, Customer, Package, Staff, Vehicle, PackageExpertise, ExpertiseReport, ExpertiseType
 from datetime import datetime
 from ..services.enum_service import COLOR_MAPPING, TRANSMISSION_TYPE_MAPPING, FUEL_TYPE_MAPPING, map_to_enum
 from ..services.report_service import (get_or_create_customer, create_report, get_or_create_vehicle_owner,
@@ -16,11 +16,9 @@ reports = Blueprint('reports', __name__)
 def report_list():
     page = request.args.get('page', 1, type=int)  # Get the current page, default is 1
     per_page = request.args.get('per_page', 10, type=int)  # Items per page, default is 10
-    paginated_reports = Report.query.paginate(page=page, per_page=per_page, error_out=False)
-
-    return render_template('report_sections/report_list.html', reports=paginated_reports.items, pagination=paginated_reports)
-
-
+    paginated_reports = Report.query.filter_by(status=ReportStatus.OPENED).paginate(page=page, per_page=per_page, error_out=False)
+    form = ReportForm()
+    return render_template('report_sections/report_list.html', reports=paginated_reports.items, pagination=paginated_reports, form=form)
 
 
 @reports.route('/report/add', methods=['GET', 'POST'])
@@ -104,7 +102,7 @@ def add_report():
                 agent = get_or_create_agent(form.agent_name.data)
 
             # Get or create the staff with name
-            staff = get_or_create_staff_by_name(form.created_by)
+            staff = Staff.query.get(form.created_by.data)
 
             # Create a new Report with the generated vehicle details
             new_report = create_report(
@@ -193,3 +191,191 @@ def delete_report(report_id):
     db.session.commit()
     flash('Report successfully deleted!')
     return redirect(url_for('reports.report_list'))
+
+
+@reports.route('/report/cancel/<int:report_id>', methods=['POST'])
+def cancel_report(report_id):
+    report = Report.query.get_or_404(report_id)
+    report.status = ReportStatus.CANCELLED
+    db.session.commit()
+    flash('Rapor başarıyla iptal edildi.', 'success')
+    return redirect(url_for('reports.report_list'))
+
+
+@reports.route('/report/complete/<int:report_id>', methods=['POST'])
+def complete_report(report_id):
+    # Here you can set the report to COMPLETED status if needed or navigate to the next page
+    # report = Report.query.get_or_404(report_id)
+    # report.status = ReportStatus.COMPLETED
+    # db.session.commit()
+
+    return redirect(url_for('reports.show_complete_report', report_id=report_id))
+
+
+@reports.route('/report/complete_report/<int:report_id>')
+def show_complete_report(report_id):
+    report = Report.query.get_or_404(report_id)
+    package_expertises = PackageExpertise.query.filter_by(package_id=report.package_id).all()
+
+    return render_template('report_sections/complete_report.html', report=report,  package_expertises=package_expertises)
+
+
+@reports.route('/report/expertise_detail_ajax', methods=['GET'])
+def expertise_detail_ajax():
+    expertise_type = request.args.get('expertise_type')
+    print("Ekspertiz tipi:", expertise_type)
+    report_id = request.args.get('report_id')
+
+    # Retrieve the report
+    report = Report.query.get_or_404(report_id)
+
+    # Find the corresponding PackageExpertise
+    package_expertise = PackageExpertise.query.filter_by(package_id=report.package_id).join(ExpertiseType).filter(ExpertiseType.name == expertise_type).first()
+
+    if not package_expertise:
+        return jsonify({"error": "Invalid expertise type or package does not include this expertise type"}), 400
+
+    # Fetch the ExpertiseReport using expertise_type_id
+    expertise_report = ExpertiseReport.query.filter_by(expertise_type_id=package_expertise.expertise_type_id).first()
+    expertise_report2 = None
+
+    if not expertise_report:
+        return jsonify({"error": "Expertise report not found"}), 404
+
+    # Handle combined expertise reports
+    if expertise_type == "İç & Dış Ekspertiz":
+        ic_expertise_type_id = ExpertiseType.query.filter_by(name="İç Ekspertiz").first().id
+        dis_expertise_type_id = ExpertiseType.query.filter_by(name="Dış Ekspertiz").first().id
+
+        expertise_report = ExpertiseReport.query.filter_by(expertise_type_id=ic_expertise_type_id).first()
+        expertise_report2 = ExpertiseReport.query.filter_by(expertise_type_id=dis_expertise_type_id).first()
+    elif expertise_type == "Yol & Dyno Ekspertiz":
+        dyno_expertise_type_id = ExpertiseType.query.filter_by(name="Dyno Ekspertiz").first().id
+        yol_expertise_type_id = ExpertiseType.query.filter_by(name="Yol Ekspertiz").first().id
+
+        expertise_report = ExpertiseReport.query.filter_by(expertise_type_id=dyno_expertise_type_id).first()
+        expertise_report2 = ExpertiseReport.query.filter_by(expertise_type_id=yol_expertise_type_id).first()
+    elif expertise_type == "Boya & Kaporta Ekspertiz":
+        boya_expertise_type_id = ExpertiseType.query.filter_by(name="Boya Ekspertiz").first().id
+        kaporta_expertise_type_id = ExpertiseType.query.filter_by(name="Kaporta Ekspertiz").first().id
+
+        expertise_report = ExpertiseReport.query.filter_by(expertise_type_id=boya_expertise_type_id).first()
+        expertise_report2 = ExpertiseReport.query.filter_by(expertise_type_id=kaporta_expertise_type_id).first()
+
+    expertise_template_map = {
+        "Motor Ekspertiz": "report_sections/expertises/motor_expertise.html",
+        "Kaporta Ekspertiz": "report_sections/expertises/kaporta_expertise.html",
+        "Beyin Ekspertiz": "report_sections/expertises/beyin_expertise.html",
+        "Mekanik Ekspertiz": "report_sections/expertises/mekanik_expertise.html",
+        "Süspansiyon Ekspertiz": "report_sections/expertises/suspansiyon_expertise.html",
+        "Yanal Kayma Ekspertiz": "report_sections/expertises/yanal_expertise.html",
+        "Fren Ekspertiz": "report_sections/expertises/fren_expertise.html",
+        "Boya Ekspertiz": "report_sections/expertises/boya_expertise.html",
+        "Yol Ekspertiz": "report_sections/expertises/yol_expertise.html",
+        "Dyno Ekspertiz": "report_sections/expertises/dyno_expertise.html",
+        "İç & Dış Ekspertiz": "report_sections/expertises/ic_dis_expertise.html",
+        "İç Ekspertiz": "report_sections/expertises/ic_dis_expertise.html",
+        "Dış Ekspertiz": "report_sections/expertises/dis_expertise.html",
+        "Yol & Dyno Ekspertiz": "report_sections/expertises/dyno_expertise.html",
+        "Boya & Kaporta Ekspertiz": "report_sections/expertises/boya_kaporta_expertise.html",
+    }
+
+    template_path = expertise_template_map.get(expertise_type)
+
+    if not template_path:
+        return jsonify({"error": "Invalid expertise type"}), 400
+
+    return render_template(template_path, report=report, expertise_report=expertise_report, expertise_report2=expertise_report2)
+
+
+@reports.route('/report/expertise/<int:expertise_report_id>', methods=['GET', 'POST'])
+def expertise_detail(expertise_report_id):
+    expertise_report = ExpertiseReport.query.get_or_404(expertise_report_id)
+    # expertise_report2'nin ID'sini formdan al
+    expertise_report2_id = request.form.get('expertise_report2_id')
+    expertise_report2 = None
+    if expertise_report2_id:
+        expertise_report2 = ExpertiseReport.query.get(expertise_report2_id)
+
+    if request.method == 'POST':
+        try:
+            # Tüm raporları güncelleyebilmek için bir listeye ekle
+            reports_to_update = [expertise_report]
+            if expertise_report2:
+                reports_to_update.append(expertise_report2)
+
+            for report in reports_to_update:
+                # Bu döngü her iki rapor için de geçerli
+                for feature in report.features:
+                    new_status = request.form.get(f'feature_{feature.id}')
+                    if new_status:
+                        feature.status = new_status
+                    elif new_status is None:
+                        print(feature.name, new_status)
+                        if feature.name == 'SOL ÖN':
+                            sol_on_value = request.form.get('sol_on')
+                            if sol_on_value is not None:
+                                feature.status = sol_on_value
+
+                        elif feature.name == 'SAĞ ÖN':
+                            sag_on_value = request.form.get('sag_on')
+                            if sag_on_value is not None:
+                                feature.status = sag_on_value
+
+                        elif feature.name == 'SOL ARKA':
+                            sol_arka_value = request.form.get('sol_arka')
+                            if sol_arka_value is not None:
+                                feature.status = sol_arka_value
+
+                        elif feature.name == 'SAĞ ARKA':
+                            sag_arka_value = request.form.get('sag_arka')
+                            if sag_arka_value is not None:
+                                feature.status = sag_arka_value
+
+                        elif feature.name == 'ÖN SOL FREN':
+                            on_sol_fren_value = request.form.get('on_sol_fren')
+                            if on_sol_fren_value is not None:
+                                feature.status = on_sol_fren_value
+
+                        elif feature.name == 'ÖN SAĞ FREN':
+                            on_sag_fren_value = request.form.get('on_sag_fren')
+                            if on_sag_fren_value is not None:
+                                feature.status = on_sag_fren_value
+
+                        elif feature.name == 'ARKA SOL FREN':
+                            arka_sol_fren_value = request.form.get('arka_sol_fren')
+                            if arka_sol_fren_value is not None:
+                                feature.status = arka_sol_fren_value
+
+                        elif feature.name == 'ARKA SAĞ FREN':
+                            arka_sag_fren_value = request.form.get('arka_sag_fren')
+                            if arka_sag_fren_value is not None:
+                                feature.status = arka_sag_fren_value
+
+                        elif feature.name == 'EL FRENI SOL':
+                            el_freni_sol_value = request.form.get('el_freni_sol')
+                            if el_freni_sol_value is not None:
+                                feature.status = el_freni_sol_value
+
+                        elif feature.name == 'EL FRENI SAĞ':
+                            el_freni_sag_value = request.form.get('el_freni_sag')
+                            if el_freni_sag_value is not None:
+                                feature.status = el_freni_sag_value
+
+                # Teknisyen yorumu güncellemesi (her iki rapor için)
+                new_comment = request.form.get('technician_comment')
+                if new_comment is not None:
+                    report.comment = new_comment
+
+            # Değişiklikleri kaydet
+            db.session.commit()
+
+            return jsonify({"success": True}), 200
+        except Exception as e:
+            db.session.rollback()
+            return jsonify({"success": False, "error": str(e)}), 500
+
+    return render_template('report_sections/complete_report.html', expertise_report=expertise_report, expertise_report2=expertise_report2)
+
+
+
