@@ -2,13 +2,15 @@ from ..database import db
 
 
 class ExpertiseType(db.Model):
-    __tablename__ = 'expertise_types'
     # ExpertiseType defines the type of expertise (e.g., Kaporta, Boya) and can be associated with multiple ExpertiseR.
+    __tablename__ = 'expertise_types'
     id = db.Column(db.Integer, primary_key=True)
     name = db.Column(db.String(100), nullable=False, unique=True)
+    parent_id = db.Column(db.Integer, db.ForeignKey('expertise_types.id'), nullable=True)
 
     # Relationship to associate expertise type with multiple ExpertiseReports
     expertise_reports = db.relationship('ExpertiseReport', back_populates='expertise_type')
+    children = db.relationship('ExpertiseType', backref=db.backref('parent', remote_side=[id]))
 
     def __repr__(self):
         return f'<ExpertiseType {self.name}>'
@@ -45,6 +47,7 @@ class ExpertiseFeature(db.Model):
 
 
 class PackageExpertise(db.Model):
+    # Model between package & expertise types
     __tablename__ = 'package_expertises'
     id = db.Column(db.Integer, primary_key=True)
     package_id = db.Column(db.Integer, db.ForeignKey('package.id'), nullable=False)
