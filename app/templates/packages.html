@@ -111,10 +111,14 @@
             <div>
                 <label for="contents" class="block text-sm font-medium text-gray-700">Uygulanan Ekspertizler</label>
                 <select multiple name="contents" id="contents" class="mt-1 block w-full h-32 px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500 sm:text-sm">
+                    {% set exclude_names = ["İç Ekspertiz", "Dış Ekspertiz", "Yol Ekspertiz", "Dyno Ekspertiz", "Boya Ekspertiz", "Kaporta Ekspertiz"] %}
                     {% for expertise in expertises %}
+                    {% if expertise.name not in exclude_names %}
                     <option value="{{ expertise.id }}">{{ expertise.name }}</option>
+                    {% endif %}
                     {% endfor %}
                 </select>
+
             </div>
             <div>
                 <label for="active" class="block text-sm font-medium text-gray-700">Paket Durumu</label>
