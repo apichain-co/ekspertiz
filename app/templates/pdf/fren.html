@@ -1,0 +1,26 @@
+<div class="section-title" style="background-color: #a82b2e; color: white; padding: 10px; margin-bottom: 20px; text-align:left;">
+    FREN TEST SONUÇLARI
+</div>
+<div class="brake-test-results">
+    <div class="front-brakes">
+        <div>
+            <p>ÖN FRENLER</p>
+            <p>Sol: {{ fren_sonuclari.on_sol }} [daN]</p>
+            <p>Sağ: {{ fren_sonuclari.on_sag }} [daN]</p>
+        </div>
+        <div>
+            <p>ARABA RESMİ VE GEÇTİ/ KALDI BİLGİSİ</p>
+            <!-- İlgili görseller ve sonuçlar -->
+        </div>
+    </div>
+    <div class="rear-brakes">
+        <p>ARKA FRENLER</p>
+        <p>Sol: {{ fren_sonuclari.arka_sol }} [daN]</p>
+        <p>Sağ: {{ fren_sonuclari.arka_sag }} [daN]</p>
+    </div>
+    <div class="handbrake">
+        <p>EL FRENI</p>
+        <p>Sol: {{ fren_sonuclari.el_sag }} [daN]</p>
+        <p>Sağ: {{ fren_sonuclari.el_sol }} [daN]</p>
+    </div>
+</div>
