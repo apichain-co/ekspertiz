@@ -22,10 +22,11 @@ from .routes.branches import branches as branches_bp
 from .routes.companies import companies as companies_bp
 from .routes.errors import errors as errors_bp
 from .routes.packages import packages as packages_bp
+from .routes.pdfs import pdfs as pdfs_bp
 
 
 def create_app(config_object=None):
-    app = Flask(__name__)
+    app = Flask(__name__, static_url_path='/static', static_folder='static')
     if config_object == 'testing':
         app.config.from_object(TestConfig)
         app.logger.setLevel(logging.CRITICAL)
@@ -38,6 +39,8 @@ def create_app(config_object=None):
             '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
         file_handler.setLevel(logging.INFO)
         app.logger.addHandler(file_handler)
+
+    logging.getLogger('fontTools.subset').setLevel(logging.WARNING)
 
     db.init_app(app)
 
@@ -52,6 +55,7 @@ def create_app(config_object=None):
     register_commands(app)
 
     # Register blueprints here
+    app.register_blueprint(pdfs_bp)
     app.register_blueprint(packages_bp)
     app.register_blueprint(errors_bp)
     app.register_blueprint(branches_bp)
