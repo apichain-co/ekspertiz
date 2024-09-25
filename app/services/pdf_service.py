@@ -7,12 +7,6 @@ from weasyprint import HTML
 from ..models import Report, Company, Vehicle, Customer, Staff, PackageExpertise, ExpertiseFeature, ExpertiseReport
 
 
-import os
-from flask import render_template, url_for, send_file
-from unidecode import unidecode
-from weasyprint import HTML
-from ..models import Report, Company, Vehicle, Customer, Staff, PackageExpertise, ExpertiseFeature, ExpertiseReport
-
 def create_pdf(report_id):
     report = Report.query.get(report_id)
     company = Company.query.first()
@@ -30,7 +24,6 @@ def create_pdf(report_id):
             'comment': report.comment,
             'features': report.features
         })
-
     motor_image_url = url_for('static', filename='assets/pdf_imgs/motor_expertise.png', _external=True)
     fren_image_url = url_for('static', filename='assets/pdf_imgs/lastik.png', _external=True)
 
@@ -60,6 +53,4 @@ def create_pdf(report_id):
                                     fren_image_url=fren_image_url
                                     )
     HTML(string=rendered_html).write_pdf(filename)
-
-    # Return the file path or serve the PDF directly
-    return send_file(filename, as_attachment=False)  # Set as_attachment=False to display in the browser
+    return filename
