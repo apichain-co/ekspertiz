@@ -37,6 +37,16 @@
             position:  running(footer);
             width:750px;
         }
+        .sasi-wrapper {
+            position: absolute;
+            right: 0;
+            top: 50%;
+            transform: translateY(-50%);
+            padding: 0 10px;
+            background-color: white;
+            border-left: 3px solid #a82b2e;
+            z-index: 2;
+        }
 
         .bordered-table {
             width: 100%;
@@ -202,14 +212,27 @@
 
 {% include 'pdf/first_page.html' %}
 
-<div class="page-break"></div>
+
 {% for pckg_report in package_expertise_reports %}
+
     {% if pckg_report.expertise_type_name == "Motor Ekspertiz" %}
+        <div class="page-break"></div>
         {% include 'pdf/motor.html' %}
-    <!-- {% elif report.expertise_type_name == "Yanal Kayma Ekspertiz" %}
+    {% elif pckg_report.expertise_type_name == "Fren Ekspertiz" %}
+        <div class="page-break"></div>
+        {% include 'pdf/fren.html' %}
+    {% elif pckg_report.expertise_type_name == "Süspansiyon Ekspertiz" %}
+        <div class="page-break"></div>
+        {% include 'pdf/suspansiyon.html' %}
+    {% elif pckg_report.expertise_type_name == "Yanal Kayma Ekspertiz" %}
+        <div class="page-break"></div>
         {% include 'pdf/yanal.html' %}
-    {% elif report.expertise_type_name == "Süspansiyon Ekspertiz" %}
-        {% include 'pdf/suspansiyon.html' %}-->
+    {% elif pckg_report.expertise_type_name == "Beyin Ekspertiz" %}
+        <div class="page-break"></div>
+        {% include 'pdf/beyin.html' %}
+    {% elif pckg_report.expertise_type_name == "Mekanik Ekspertiz" %}
+        <div class="page-break"></div>
+        {% include 'pdf/mekanik.html' %}
     {% endif %}
 {% endfor %}
 
