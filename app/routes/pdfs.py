@@ -4,7 +4,7 @@ from ..models import Report
 from ..services.pdf_service import *
 pdfs = Blueprint('pdfs', __name__, url_prefix='/pdfs')
 
-@pdfs.route('/<int:report_id>')
+@pdfs.route('generate/<int:report_id>')
 def generate_report_pdf(report_id):
 
     try:
