@@ -74,7 +74,6 @@ def add_report():
                 'fuel_type': vehicle.fuel_type.value,
                 'mileage': vehicle.mileage
             }
-
             # Create or get the Customer with all provided data
             customer_data = {
                 'customer_name': form.customer_name.data,

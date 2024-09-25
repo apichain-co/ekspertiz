@@ -7,6 +7,12 @@ from weasyprint import HTML
 from ..models import Report, Company, Vehicle, Customer, Staff, PackageExpertise, ExpertiseFeature, ExpertiseReport
 
 
+import os
+from flask import render_template, url_for, send_file
+from unidecode import unidecode
+from weasyprint import HTML
+from ..models import Report, Company, Vehicle, Customer, Staff, PackageExpertise, ExpertiseFeature, ExpertiseReport
+
 def create_pdf(report_id):
     report = Report.query.get(report_id)
     company = Company.query.first()
@@ -20,11 +26,13 @@ def create_pdf(report_id):
         expertise_reports = ExpertiseReport.query.filter_by(expertise_type_id=pe.expertise_type_id).all()
         report = expertise_reports[0]
         package_expertise_reports.append({
-                'expertise_type_name': report.expertise_type.name,
-                'comment': report.comment,
-                'features': report.features
-            })
+            'expertise_type_name': report.expertise_type.name,
+            'comment': report.comment,
+            'features': report.features
+        })
+
     motor_image_url = url_for('static', filename='assets/pdf_imgs/motor_expertise.png', _external=True)
+    fren_image_url = url_for('static', filename='assets/pdf_imgs/lastik.png', _external=True)
 
     # Define the output directory and filename
     base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -48,7 +56,10 @@ def create_pdf(report_id):
                                     staff=staff,
                                     package=package,
                                     package_expertise_reports=package_expertise_reports,
-                                    motor_image_url=motor_image_url)
+                                    motor_image_url=motor_image_url,
+                                    fren_image_url=fren_image_url
+                                    )
     HTML(string=rendered_html).write_pdf(filename)
-    return filename
 
+    # Return the file path or serve the PDF directly
+    return send_file(filename, as_attachment=False)  # Set as_attachment=False to display in the browser

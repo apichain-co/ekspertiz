@@ -24,8 +24,9 @@ def add_staff():
             full_name=form.full_name.data,
             password=hashed_password,  # Store the hashed password
             phone_number=form.phone_number.data,
-            department=form.department.data,
-            role=form.role.data
+            department="Default",
+            role=form.role.data,
+            branch_id=1
         )
         try:
             db.session.add(new_staff)

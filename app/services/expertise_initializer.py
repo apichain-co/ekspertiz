@@ -1,3 +1,5 @@
+import logging
+
 from app.database import db
 from app.models import ExpertiseReport, ExpertiseFeature, ExpertiseType
 from app.enums import ExpertiseTypeEnum, ExpertiseAnswer
@@ -87,7 +89,6 @@ class ExpertiseInitializer:
 
 
 
-
     @classmethod
     def initialize_expertise_reports(cls):
         expertise_map = cls.load_expertise_map()
@@ -96,7 +97,7 @@ class ExpertiseInitializer:
         parent_child_mapping = {
             "İç & Dış Ekspertiz": ["İç Ekspertiz", "Dış Ekspertiz"],
             "Yol & Dyno Ekspertiz": ["Yol Ekspertiz", "Dyno Ekspertiz"],
-            "Boya & Kaporta Ekspertiz": ["Boya Ekspertiz", "Kaporta Ekspertiz"]
+            "Boya & Kaporta Ekspertiz": ["Boya Ekspertiz", "Kaporta Ekspertiz"],
         }
 
         created_reports = []
@@ -109,7 +110,12 @@ class ExpertiseInitializer:
                     created_reports.append(f"{parent_name} - {child_name}")
                 else:
                     existing_reports.append(f"{parent_name} - {child_name}")
-
+        for expertise_name, parts_and_statuses in expertise_map.items():
+            if expertise_name not in [child for children in parent_child_mapping.values() for child in children]:
+                if cls.add_expertise_report(expertise_name, parts_and_statuses):
+                    created_reports.append(f"{expertise_name} (Standalone)")
+                else:
+                    existing_reports.append(f"{expertise_name} (Standalone)")
         # Print a summary message
         if created_reports:
             print(f"Successfully created reports: {', '.join(created_reports)}")
