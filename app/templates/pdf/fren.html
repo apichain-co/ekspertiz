@@ -1,17 +1,5 @@
 <style>
-    .hTitleBg {
-        background-color: #dcdcdc;
-        text-align: center;
-        vertical-align: middle;
-    }
 
-    .hTitle {
-        font-size: 16px;
-        font-weight: bold;
-        color: #000;
-        padding: 10px;
-        width:10%;
-    }
     .frentable {
         width: 100%;
         height: 500px;
@@ -26,10 +14,6 @@
         font-weight: bold;
     }
 
-
-    .elFren {
-        width: 2%;
-    }
 
     .extra {
         width: 25%;
@@ -46,6 +30,13 @@
     .on-frenler, .arka-frenler {
         height: 50%;
         width: 2%;
+        font-size:17px;
+        background-color: #d9d9d9;
+    }
+    .elFrenTitle{
+        width:2%;
+        font-size:17px;
+        background-color: #d9d9d9;
     }
 
     .aracgovde {
@@ -107,12 +98,20 @@
     }
 
     .olcum.solArka {
-        bottom: -42%;
+        bottom: 20%;
         left: 4%;
     }
 
     .olcum.sagArka {
-        bottom: -42%;
+        bottom: 20%;
+        right: 6%;
+    }
+    .el-freni.olcum.solArka {
+        bottom: 50%;
+        left: 4%;
+    }
+    .el-freni.olcum.sagArka {
+        bottom: 50%;
         right: 6%;
     }
 
@@ -140,6 +139,9 @@
     .sonucOn.green, .sonucArka.green{
         background-color:#26c31e;
     }
+    .sonucOn.red, .sonucArka.red{
+        background-color:red;
+    }
 
     .sapmaArka {
         bottom: 20%;
@@ -147,26 +149,36 @@
         background-color: white;
         transform: translateX(-50%);
     }
+    .sapmaArkaElFren {
+        position: absolute;
+        top: 40%;
+        left: 27%;
+        background-color: white;
+        font-size: 13px;
+        font-weight: bold;
+        padding: 5px 10px;
+        border-radius: 10px;
 
+    }
     .sonucArka {
         bottom: 40%;
         left: 50%;
         transform: translateX(-50%);
         color: #fff;
     }
+    .sonucArka.elFren{
+        left:45%;
+    }
 
     .text {
         font-size: 14px;
         color:black;
     }
-    .deger{
-        color:black;
-    }
+
 
     .durum {
         text-align: center;
-        font-size: 14px;
-        margin-top: 10px;
+        font-size: 12px;
     }
 
     .durum .green {
@@ -179,9 +191,7 @@
         font-weight: bold;
     }
 
-    .elFren {
-        border-left: 1px solid #ccc;
-    }
+
 
     .circle {
         display: inline-block;
@@ -192,24 +202,38 @@
         margin-right: 5px;
     }
 
-    input[type="text"] {
-        font-size: 10px;
+    .fren-span {
+        font-size: 13px;
         font-weight: bold;
         background-color: white;
-        border:2px solid black;
-        color:black;
-        border-radius:13px;
+        border: 2px solid black;
+        color: black;
+        border-radius: 13px;
         width: 50px;
         height: 20px;
+        display: inline-block;
+        text-align: center;
+        line-height: 20px;
+    }
+    .cropped-image {
+        height: 30%;
+        overflow: hidden;
+        position: relative;
+        top: 35%;
+    }
+
+    .cropped-image img {
+        height: auto;
+        transform: translateY(-70%);
     }
 </style>
 
 {% macro get_feature_value(features, name) %}
-    {% for feature in features %}
-        {% if feature.name == name %}
-            {{ feature.status }}
-        {% endif %}
-    {% endfor %}
+{% for feature in features %}
+{% if feature.name == name %}
+{{ feature.status }}
+{% endif %}
+{% endfor %}
 {% endmacro %}
 
 <div class="title-large primary-color primary-bg-color" style="position: relative; padding: 15px;">
@@ -247,17 +271,18 @@
                     <span class="yon right">SAĞ</span>
                     <span class="yon bottom">ARKA</span>
                     <span class="yon left">SOL</span>
-                    <!-- ÖN SOL FREN -->
-                    <span class="olcum solOn">
-                            <span class="deger">
-                                <input type="text" id="olcumSolOn"  value="{{ get_feature_value(pckg_report.features, 'ÖN SOL FREN') }}">
-                            </span>
-                        </span>
-
-                    <!-- Sapma Hesaplaması ve Sonuç -->
                     {% set on_sol_fren = get_feature_value(pckg_report.features, 'ÖN SOL FREN')|float %}
                     {% set on_sag_fren = get_feature_value(pckg_report.features, 'ÖN SAĞ FREN')|float %}
+                    <!-- ÖN SOL FREN -->
+                    <span class="olcum solOn">
+                        <span class="deger">
+                            <span id="olcumSolOn" class="fren-span">{{ on_sol_fren|int }}</span>
+                        </span>
+                    </span>
 
+
+
+                    <!-- Sapma Hesaplaması ve Sonuç -->
                     {% if on_sol_fren > 0 %}
                         {% set sapma_on = ((on_sol_fren - on_sag_fren)|abs / on_sol_fren * 100)|round(2) %}
                     {% else %}
@@ -274,20 +299,23 @@
                     <!-- ÖN SAĞ FREN -->
                     <span class="olcum sagOn">
                             <span class="deger">
-                                <input type="text" id="olcumSagOn" value="{{ get_feature_value(pckg_report.features, 'ÖN SAĞ FREN') }}">
+                            <span id="olcumSagOn" class="fren-span">{{ on_sag_fren|int }}</span>
                             </span>
-                        </span>
+                    </span>
 
-                    <!-- ARKA SOL FREN -->
-                    <span class="olcum solArka">
-                            <span class="deger">
-                                <input type="text" id="olcumSolArka" value="{{ get_feature_value(pckg_report.features, 'ARKA SOL FREN') }}">
-                            </span>
-                        </span>
+
 
                     <!-- Sapma Hesaplaması ve Sonuç -->
                     {% set arka_sol_fren = get_feature_value(pckg_report.features, 'ARKA SOL FREN')|float %}
                     {% set arka_sag_fren = get_feature_value(pckg_report.features, 'ARKA SAĞ FREN')|float %}
+                    <!-- ARKA SOL FREN -->
+                    <span class="olcum solArka">
+                            <span class="deger">
+                               <span id="olcumSolArka" class="fren-span">{{ arka_sol_fren|int }}</span>
+                            </span>
+                    </span>
+
+
 
                     {% if arka_sol_fren > 0 %}
                         {% set sapma_arka = ((arka_sol_fren - arka_sag_fren)|abs / arka_sol_fren * 100)|round(2) %}
@@ -305,7 +333,7 @@
                     <!-- ARKA SAĞ FREN -->
                     <span class="olcum sagArka">
                             <span class="deger">
-                                <input type="text" id="olcumSagArka" value="{{ get_feature_value(pckg_report.features, 'ARKA SAĞ FREN') }}">
+                               <span id="olcumSagArka" class="fren-span">{{ arka_sag_fren|int }}</span>
                             </span>
                         </span>
                 </div>
@@ -319,34 +347,33 @@
                 </div>
             </div>
         </td>
-        <td class="elFren hTitle frentd" rowspan="2"> <span class="rotate-text">EL FRENİ</span></td>
-        <td class="extra frentd">deneme3</td>
-    </tr>
-    <tr>
-        <td class="arka-frenler frentd hTitle "><span class="rotate-text">ARKA FRENLER</span></td>
+        <td class="elFrenTitle hTitle frentd" rowspan="2"> <span class="rotate-text">EL FRENİ</span></td>
         <td rowspan="2" class="extra frentd" >
             <div class="aracgovde el-freni">
                 <div class="bg">
-                    <img src="{{ handbrake_image_url }}" alt="El Freni">
-
-                    <!-- EL FRENI SOL -->
-                    <span class="olcum solArka">
-                            <span class="deger">
-                                <input type="text" id="olcumElSolArka" value="{{ get_feature_value(pckg_report.features, 'EL FRENI SOL') }}">
-                            </span>
-                        </span>
+                    <div class="cropped-image">
+                        <img src="{{ fren_image_url }}" alt="El Freni">
+                    </div>
 
                     <!-- Sapma Hesaplaması ve Sonuç -->
                     {% set el_fren_sol = get_feature_value(pckg_report.features, 'EL FRENI SOL')|float %}
                     {% set el_fren_sag = get_feature_value(pckg_report.features, 'EL FRENI SAĞ')|float %}
+                    <!-- EL FRENI SOL -->
+                    <span class="olcum solArka el-freni">
+                            <span class="deger">
+                               <span id="olcumElSolArka" class="fren-span">{{ el_fren_sol|int }}</span>
+                            </span>
+                        </span>
+
+
 
                     {% if el_fren_sol > 0 %}
-                        {% set sapma_el_fren = ((el_fren_sol - el_fren_sag)|abs / el_fren_sol * 100)|round(2) %}
+                    {% set sapma_el_fren = ((el_fren_sol - el_fren_sag)|abs / el_fren_sol * 100)|round(2) %}
                     {% else %}
-                        {% set sapma_el_fren = 0 %}
+                    {% set sapma_el_fren = 0 %}
                     {% endif %}
 
-                    <span class="sapmaArka elFren" style="display: inline;">
+                    <span class="sapmaArkaElFren" style="display: inline;">
                             SAPMA <span class="sapmaArkaDeger elFren green">{{ sapma_el_fren }}%</span>
                         </span>
                     <span class="sonucArka elFren {{ 'green' if sapma_el_fren <= 30 else 'red' }}" style="display: inline;">
@@ -354,11 +381,11 @@
                         </span>
 
                     <!-- EL FRENI SAĞ -->
-                    <span class="olcum sagArka">
+                    <span class="olcum sagArka el-freni">
                             <span class="deger">
-                                <input type="text" id="olcumElSagArka" value="{{ get_feature_value(pckg_report.features, 'EL FRENI SAĞ') }}">
+                               <span id="olcumElSagArka" class="fren-span">{{ el_fren_sag|int }}</span>
                             </span>
-                        </span>
+                    </span>
                 </div>
                 <div class="durum">
                     <div class="green">
@@ -370,6 +397,10 @@
                 </div>
             </div>
         </td>
+
+    </tr>
+    <tr>
+        <td class="arka-frenler frentd hTitle "><span class="rotate-text">ARKA FRENLER</span></td>
     </tr>
 </table>
 
