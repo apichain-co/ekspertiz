@@ -30,8 +30,11 @@
 <header class="header">
     <div class="header-content">
         <div>
-            <img src="https://placehold.co/123x73" alt="Company Logo">
-        </div>
+    {% for image in images %}
+        {% if image.type == 'logo' %}
+            <img src="{{ image.url }}" alt="Company Logo">
+        {% endif %}
+    {% endfor %}        </div>
         <div class="header-text">
             <h1>{{ company.name }}</h1>
             <p>RAPOR NO: <span class="text-red-600 font-bold">{{ report.id }}</span></p>
