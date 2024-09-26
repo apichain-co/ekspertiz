@@ -167,3 +167,4 @@ ekspertiz.iml
 identifier.sqlite
 app/.DS_Store
 .DS_Store
+/app/services/pdfs
