@@ -27,6 +27,31 @@ def create_pdf(report_id):
     motor_image_url = url_for('static', filename='assets/pdf_imgs/motor_expertise.png', _external=True)
     fren_image_url = url_for('static', filename='assets/pdf_imgs/lastik.png', _external=True)
 
+    images = [
+        {'filename': 'logo.jpeg', 'url': url_for('static', filename='assets/pdf_imgs/logo.jpeg', _external=True),
+         'type': 'logo'},
+        {'filename': 'motor_expertise.png',
+         'url': url_for('static', filename='assets/pdf_imgs/motor_expertise.png', _external=True), 'type': 'motor'},
+        {'filename': 'lastik.png', 'url': url_for('static', filename='assets/pdf_imgs/lastik.png', _external=True),
+         'type': 'fren'},
+        {'filename': 'abs.png', 'url': url_for('static', filename='assets/pdf_imgs/abs.png', _external=True),
+         'type': 'beyin'},
+        {'filename': 'air.png', 'url': url_for('static', filename='assets/pdf_imgs/air.png', _external=True),
+         'type': 'beyin'},
+        {'filename': 'airbag.png', 'url': url_for('static', filename='assets/pdf_imgs/airbag.png', _external=True),
+         'type': 'beyin'},
+        {'filename': 'brain.png', 'url': url_for('static', filename='assets/pdf_imgs/brain.png', _external=True),
+         'type': 'beyin'},
+        {'filename': 'engine.png', 'url': url_for('static', filename='assets/pdf_imgs/engine.png', _external=True),
+         'type': 'beyin'},
+        {'filename': 'gearbox.png', 'url': url_for('static', filename='assets/pdf_imgs/gearbox.png', _external=True),
+         'type': 'beyin'},
+        {'filename': 'steering.png', 'url': url_for('static', filename='assets/pdf_imgs/steering.png', _external=True),
+         'type': 'beyin'},
+        {'filename': 'tire.png', 'url': url_for('static', filename='assets/pdf_imgs/tire.png', _external=True),
+         'type': 'beyin'}
+    ]
+
     # Define the output directory and filename
     base_dir = os.path.dirname(os.path.abspath(__file__))
     directory = os.path.join(base_dir, 'pdfs')
@@ -50,7 +75,8 @@ def create_pdf(report_id):
                                     package=package,
                                     package_expertise_reports=package_expertise_reports,
                                     motor_image_url=motor_image_url,
-                                    fren_image_url=fren_image_url
+                                    fren_image_url=fren_image_url,
+                                    images=images
                                     )
     HTML(string=rendered_html).write_pdf(filename)
     return filename
