@@ -303,12 +303,24 @@ def expertise_detail(expertise_report_id):
             if expertise_report2:
                 reports_to_update.append(expertise_report2)
 
+            status_directory_map = {
+                'ORİJİNAL': 'orijinal',
+                'PLASTİK': 'plastik',
+                'BOYALI': 'boyalı',
+                'LOKAL BOYALI': 'lokal_boyalı',
+                'DEĞİŞMİŞ': 'değişmiş',
+                'KAPLAMA': 'kaplama',
+                'YOK': 'yok'
+            }
+
             for report in reports_to_update:
-                # Bu döngü her iki rapor için de geçerli
                 for feature in report.features:
                     new_status = request.form.get(f'feature_{feature.id}')
                     if new_status:
                         feature.status = new_status
+                        feature_name_encoded = feature.name.replace(' ', '%20')  # Replace spaces with %20
+                        feature.image_path = f'static/assets/{status_directory_map[new_status]}/{feature_name_encoded}.png'
+
                     elif new_status is None:
                         print(feature.name, new_status)
                         if feature.name == 'SOL ÖN':
