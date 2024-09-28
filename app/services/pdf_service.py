@@ -4,6 +4,7 @@ from flask import render_template, url_for
 from unidecode import unidecode
 from weasyprint import HTML
 
+from .. import ExpertiseType
 from ..models import Report, Company, Vehicle, Customer, Staff, PackageExpertise, ExpertiseFeature, ExpertiseReport
 
 
@@ -18,12 +19,47 @@ def create_pdf(report_id):
     package_expertise_reports = []
     for pe in package.package_expertises:
         expertise_reports = ExpertiseReport.query.filter_by(expertise_type_id=pe.expertise_type_id).all()
-        report = expertise_reports[0]
+        expertise_report = expertise_reports[0]
+
+        expertise_report2 = None
+        if expertise_report.expertise_type.name == "Boya & Kaporta Ekspertiz":
+            boya_expertise_type_id = ExpertiseType.query.filter_by(name="Boya Ekspertiz").first().id
+            kaporta_expertise_type_id = ExpertiseType.query.filter_by(name="Kaporta Ekspertiz").first().id
+
+            # Retrieve both Boya and Kaporta ExpertiseReports
+            expertise_report = ExpertiseReport.query.filter_by(expertise_type_id=boya_expertise_type_id).first()
+            expertise_report2 = ExpertiseReport.query.filter_by(expertise_type_id=kaporta_expertise_type_id).first()
+
+        features_with_images = []
+        for feature in expertise_report.features:
+            features_with_images.append({
+                'name': feature.name,
+                'status': feature.status,
+                'image_path': url_for('static', filename=feature.image_path,
+                                      _external=True) if feature.image_path else None
+            })
+
+        if expertise_report2:
+            for feature in expertise_report2.features:
+                features_with_images.append({
+                    'name': feature.name,
+                    'status': feature.status,
+                    'image_path': url_for('static', filename=feature.image_path,
+                                          _external=True) if feature.image_path else None
+                })
+
         package_expertise_reports.append({
-            'expertise_type_name': report.expertise_type.name,
-            'comment': report.comment,
-            'features': report.features
+            'expertise_type_name': expertise_report.expertise_type.name,
+            'comment': expertise_report.comment,
+            'features': features_with_images
         })
+
+        if expertise_report2:
+            package_expertise_reports.append({
+                'expertise_type_name': expertise_report2.expertise_type.name,
+                'comment': expertise_report2.comment,
+                'features': features_with_images
+            })
     motor_image_url = url_for('static', filename='assets/pdf_imgs/motor_expertise.png', _external=True)
     fren_image_url = url_for('static', filename='assets/pdf_imgs/lastik.png', _external=True)
 
@@ -34,23 +70,18 @@ def create_pdf(report_id):
          'url': url_for('static', filename='assets/pdf_imgs/motor_expertise.png', _external=True), 'type': 'motor'},
         {'filename': 'lastik.png', 'url': url_for('static', filename='assets/pdf_imgs/lastik.png', _external=True),
          'type': 'fren'},
-        {'filename': 'abs.png', 'url': url_for('static', filename='assets/pdf_imgs/abs.png', _external=True),
-         'type': 'beyin'},
-        {'filename': 'air.png', 'url': url_for('static', filename='assets/pdf_imgs/air.png', _external=True),
-         'type': 'beyin'},
-        {'filename': 'airbag.png', 'url': url_for('static', filename='assets/pdf_imgs/airbag.png', _external=True),
-         'type': 'beyin'},
-        {'filename': 'brain.png', 'url': url_for('static', filename='assets/pdf_imgs/brain.png', _external=True),
-         'type': 'beyin'},
-        {'filename': 'engine.png', 'url': url_for('static', filename='assets/pdf_imgs/engine.png', _external=True),
-         'type': 'beyin'},
-        {'filename': 'gearbox.png', 'url': url_for('static', filename='assets/pdf_imgs/gearbox.png', _external=True),
-         'type': 'beyin'},
-        {'filename': 'steering.png', 'url': url_for('static', filename='assets/pdf_imgs/steering.png', _external=True),
-         'type': 'beyin'},
-        {'filename': 'tire.png', 'url': url_for('static', filename='assets/pdf_imgs/tire.png', _external=True),
-         'type': 'beyin'}
     ]
+
+    obd_mapping = {
+        'Hava Yastığı Elektroniğinde': url_for('static', filename='assets/pdf_imgs/airbag.png', _external=True),
+        'Motor Arıza Lambası': url_for('static', filename='assets/pdf_imgs/engine.png', _external=True),
+        'ABS / ESP / ESR Elektroniği': url_for('static', filename='assets/pdf_imgs/abs.png', _external=True),
+        'Klima Elektroniği': url_for('static', filename='assets/pdf_imgs/air.png', _external=True),
+        'Lastik Basınç Elektroniği': url_for('static', filename='assets/pdf_imgs/tire.png', _external=True),
+        'Elektirikli Direksiyon': url_for('static', filename='assets/pdf_imgs/steering.png', _external=True),
+        'Motor Beyin Elektroniği': url_for('static', filename='assets/pdf_imgs/brain.png', _external=True),
+        'Şanzıman Elektroniği': url_for('static', filename='assets/pdf_imgs/gearbox.png', _external=True)
+    }
 
     # Define the output directory and filename
     base_dir = os.path.dirname(os.path.abspath(__file__))
@@ -76,7 +107,8 @@ def create_pdf(report_id):
                                     package_expertise_reports=package_expertise_reports,
                                     motor_image_url=motor_image_url,
                                     fren_image_url=fren_image_url,
-                                    images=images
+                                    images=images,
+                                    obd_mapping = obd_mapping,
                                     )
     HTML(string=rendered_html).write_pdf(filename)
     return filename
