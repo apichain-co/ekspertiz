@@ -11,7 +11,8 @@
     {"part_name": "Sağ Ön Çamurluk", "default_status": "ORİJİNAL"},
     {"part_name": "Sağ Ön Kapı", "default_status": "ORİJİNAL"},
     {"part_name": "Sağ Arka Kapı", "default_status": "ORİJİNAL"},
-    {"part_name": "Sağ Arka Çamurluk", "default_status": "ORİJİNAL"}
+    {"part_name": "Sağ Arka Çamurluk", "default_status": "ORİJİNAL"},
+    {"part_name": "Sol Arka Kapı", "default_status": "ORİJİNAL"}
   ],
   "Kaporta Ekspertiz": [
     {"part_name": "Sol Ön Şase", "default_status": "SORUNSUZ"},

@@ -8,6 +8,10 @@ from ..services.report_service import (get_or_create_customer, create_report, ge
                                        get_or_create_agent, get_or_create_vehicle, get_or_create_staff_by_name)
 from sqlalchemy.exc import IntegrityError
 from ..forms.report_form import ReportForm
+import logging
+
+logging.basicConfig(level=logging.DEBUG)
+logger = logging.getLogger(__name__)
 
 reports = Blueprint('reports', __name__)
 
@@ -158,9 +162,9 @@ def add_report():
 
 @reports.route('/report/update/<int:report_id>', methods=['GET', 'POST'])
 def update_report(report_id):
+    print("update çalıştı")
     report = Report.query.get_or_404(report_id)
     form = ReportForm(obj=report)
-
     if form.validate_on_submit():
         form.populate_obj(report)
 
@@ -170,9 +174,11 @@ def update_report(report_id):
             return redirect(url_for('reports.report_list'))
         except IntegrityError as e:
             db.session.rollback()
+            print("integrity err")
             flash(f'Tüm değerleri doğru girdiğinize emin olun!', 'error')
         except Exception as e:
             db.session.rollback()
+            print(e)
             flash(f'Beklenmedik bir hata oluştu!', 'error')
 
     # Retrieve necessary data for the form
@@ -287,18 +293,27 @@ def expertise_detail_ajax():
     return render_template(template_path, report=report, expertise_report=expertise_report, expertise_report2=expertise_report2)
 
 
+
+
+
+
 @reports.route('/report/expertise/<int:expertise_report_id>', methods=['GET', 'POST'])
 def expertise_detail(expertise_report_id):
+    logger.debug(f"Accessing expertise_detail with report_id: {expertise_report_id}")
+
     expertise_report = ExpertiseReport.query.get_or_404(expertise_report_id)
-    # expertise_report2'nin ID'sini formdan al
+    logger.debug(f"Retrieved expertise_report: {expertise_report}")
+
     expertise_report2_id = request.form.get('expertise_report2_id')
+    logger.debug(f"Received expertise_report2_id: {expertise_report2_id}")
+
     expertise_report2 = None
     if expertise_report2_id:
         expertise_report2 = ExpertiseReport.query.get(expertise_report2_id)
 
     if request.method == 'POST':
+        logger.debug("Processing POST request")
         try:
-            # Tüm raporları güncelleyebilmek için bir listeye ekle
             reports_to_update = [expertise_report]
             if expertise_report2:
                 reports_to_update.append(expertise_report2)
@@ -310,83 +325,42 @@ def expertise_detail(expertise_report_id):
                 'LOKAL BOYALI': 'lokal_boyalı',
                 'DEĞİŞMİŞ': 'değişmiş',
                 'KAPLAMA': 'kaplama',
-                'YOK': 'yok'
+                'YOK': 'yok',
             }
 
             for report in reports_to_update:
+                logger.debug(f"Updating report: {report}")
                 for feature in report.features:
                     new_status = request.form.get(f'feature_{feature.id}')
-                    if new_status:
+
+                    if new_status in status_directory_map.keys():
                         feature.status = new_status
-                        feature_name_encoded = feature.name.replace(' ', '%20')  # Replace spaces with %20
-                        feature.image_path = f'static/assets/{status_directory_map[new_status]}/{feature_name_encoded}.png'
+                        #feature_name_encoded = feature.name.replace(' ', '%20')
+                        feature.image_path = f'assets/car_parts/{status_directory_map[new_status]}/{feature.name}.png'
 
                     elif new_status is None:
-                        print(feature.name, new_status)
-                        if feature.name == 'SOL ÖN':
-                            sol_on_value = request.form.get('sol_on')
-                            if sol_on_value is not None:
-                                feature.status = sol_on_value
+                        if feature.name in ['SOL ÖN', 'SAĞ ÖN', 'SOL ARKA', 'SAĞ ARKA', 'ÖN SOL FREN', 'ÖN SAĞ FREN',
+                                            'ARKA SOL FREN', 'ARKA SAĞ FREN', 'EL FRENI SOL', 'EL FRENI SAĞ']:
+                            value = request.form.get(feature.name.lower().replace(' ', '_'))
+                            if value is not None:
+                                feature.status = value
+                                logger.debug(f"Updated {feature.name} status to: {value}")
 
-                        elif feature.name == 'SAĞ ÖN':
-                            sag_on_value = request.form.get('sag_on')
-                            if sag_on_value is not None:
-                                feature.status = sag_on_value
-
-                        elif feature.name == 'SOL ARKA':
-                            sol_arka_value = request.form.get('sol_arka')
-                            if sol_arka_value is not None:
-                                feature.status = sol_arka_value
-
-                        elif feature.name == 'SAĞ ARKA':
-                            sag_arka_value = request.form.get('sag_arka')
-                            if sag_arka_value is not None:
-                                feature.status = sag_arka_value
-
-                        elif feature.name == 'ÖN SOL FREN':
-                            on_sol_fren_value = request.form.get('on_sol_fren')
-                            if on_sol_fren_value is not None:
-                                feature.status = on_sol_fren_value
-
-                        elif feature.name == 'ÖN SAĞ FREN':
-                            on_sag_fren_value = request.form.get('on_sag_fren')
-                            if on_sag_fren_value is not None:
-                                feature.status = on_sag_fren_value
-
-                        elif feature.name == 'ARKA SOL FREN':
-                            arka_sol_fren_value = request.form.get('arka_sol_fren')
-                            if arka_sol_fren_value is not None:
-                                feature.status = arka_sol_fren_value
-
-                        elif feature.name == 'ARKA SAĞ FREN':
-                            arka_sag_fren_value = request.form.get('arka_sag_fren')
-                            if arka_sag_fren_value is not None:
-                                feature.status = arka_sag_fren_value
-
-                        elif feature.name == 'EL FRENI SOL':
-                            el_freni_sol_value = request.form.get('el_freni_sol')
-                            if el_freni_sol_value is not None:
-                                feature.status = el_freni_sol_value
-
-                        elif feature.name == 'EL FRENI SAĞ':
-                            el_freni_sag_value = request.form.get('el_freni_sag')
-                            if el_freni_sag_value is not None:
-                                feature.status = el_freni_sag_value
-
-                # Teknisyen yorumu güncellemesi (her iki rapor için)
                 new_comment = request.form.get('technician_comment')
                 if new_comment is not None:
                     report.comment = new_comment
+                    logger.debug(f"Updated technician comment for report ID: {report.id}")
 
-            # Değişiklikleri kaydet
             db.session.commit()
+            logger.debug("Database changes committed successfully")
 
             return jsonify({"success": True}), 200
         except Exception as e:
             db.session.rollback()
+            logger.error(f"Error occurred: {str(e)}")
             return jsonify({"success": False, "error": str(e)}), 500
 
-    return render_template('report_sections/complete_report.html', expertise_report=expertise_report, expertise_report2=expertise_report2)
-
-
+    logger.debug("Rendering complete_report.html")
+    return render_template('report_sections/complete_report.html', expertise_report=expertise_report,
+                           expertise_report2=expertise_report2)
 

@@ -22,4 +22,4 @@ class Report(db.Model):
     vehicle = db.relationship('Vehicle', back_populates='reports')
 
     def __repr__(self):
-        return f'<Report {self.vehicle_plate} - {self.inspection_date}>'
+        return f'<Report  {self.id}>'

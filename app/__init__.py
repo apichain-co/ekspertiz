@@ -1,4 +1,6 @@
 import os
+import sys
+
 from flask import Flask
 from .database import db, migrate
 from .models import (
@@ -29,16 +31,24 @@ def create_app(config_object=None):
     app = Flask(__name__, static_url_path='/static', static_folder='static')
     if config_object == 'testing':
         app.config.from_object(TestConfig)
-        app.logger.setLevel(logging.CRITICAL)
+        app.logger.setLevel(logging.DEBUG)
+
     else:
         app.config.from_object('config.Config')
         if not os.path.exists('logs'):
             os.mkdir('logs')
+        app.logger.setLevel(logging.DEBUG)
         file_handler = RotatingFileHandler('logs/error.log', maxBytes=10240, backupCount=10)
         file_handler.setFormatter(logging.Formatter(
             '%(asctime)s %(levelname)s: %(message)s [in %(pathname)s:%(lineno)d]'))
         file_handler.setLevel(logging.INFO)
         app.logger.addHandler(file_handler)
+
+        stream_handler = logging.StreamHandler(sys.stdout)
+        stream_handler.setLevel(logging.DEBUG)
+        stream_handler.setFormatter(logging.Formatter('%(asctime)s - %(name)s - %(levelname)s - %(message)s'))
+        app.logger.addHandler(stream_handler)
+
 
     logging.getLogger('fontTools.subset').setLevel(logging.WARNING)
 

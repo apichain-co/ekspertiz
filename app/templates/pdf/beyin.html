@@ -61,21 +61,21 @@
     }
 </style>
 
-<div class="beyin-title-large primary-color primary-bg-color" style="position: relative; padding: 15px;">
+<div class="title-large primary-color primary-bg-color" style="position: relative; padding: 15px;">
     <span style="color: white;">OBD & BEYİN EKSPERTİZ RAPORU</span>
-    <div class="beyin-sasi-wrapper" style="position: absolute; right: 1%; top: 50%; transform: translateY(-50%); padding: 0 10px; background-color: white; border-left: 0;">
+    <div class="sasi-wrapper" style="position: absolute; right: 1%; top: 50%; transform: translateY(-50%); padding: 0 10px; background-color: white; border-left: 0;">
         <table width="100%">
             <tbody>
             <tr>
-                <td class="beyin-td" style="font-size: 12px; font-weight: bold;">
-                    ŞASİ NO<span style="font-size: 14px;">:</span>
+                <td class="" style="font-size: 12px; font-weight: bold; ">
+                    ŞASİ NO<span style="font-size: 14px; ">:</span>
                 </td>
-                <td class="beyin-td text-medium" rowspan="2" style="font-size: 20px; font-weight: bold;">
+                <td class=" text-medium" rowspan="2" style="font-size: 20px; font-weight: bold;">
                     {{ vehicle.chassis_number[-6:] }}
                 </td>
             </tr>
             <tr>
-                <td class="beyin-td text-small" style="font-size: 8px; text-align:center;">
+                <td class=" text-small" style="font-size: 8px; text-align:center;  ">
                     SON 6 HANE
                 </td>
             </tr>
@@ -83,12 +83,13 @@
         </table>
     </div>
 </div>
-
 <table class="beyin-bordered-table">
     {% for feature in pckg_report.features %}
     <tr>
-        <td class="beyin-td" style="width: 50px;">
-            <img src="https://placehold.co/50x50" alt="{{ feature.name }} Icon" />
+        <td class="beyin-td" >
+            <!-- Get the image URL based on the feature name -->
+            {% set image_url = obd_mapping.get(feature.name, default_image_url) %}
+            <img style="width: 60px;" src="{{ image_url }}" alt="{{ feature.name }}">
         </td>
         <td class="beyin-td">{{ feature.name }}</td>
         <td class="beyin-td">
@@ -104,6 +105,9 @@
                     </span>
                     <span class="beyin-status-text">{{ feature.status }}</span>
                 {% else %}
+                    <span class="beyin-status-icon" style="color: #c91d1d;">
+                        <i class="fas fa-times"></i> <!-- Font Awesome cross icon -->
+                    </span>
                     <span class="beyin-status-text">{{ feature.status }}</span>
                 {% endif %}
             </div>
